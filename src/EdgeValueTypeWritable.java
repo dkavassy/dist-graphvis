@@ -7,8 +7,8 @@ import org.apache.hadoop.io.LongWritable;
 
 public class EdgeValueTypeWritable implements org.apache.hadoop.io.Writable {
 	
-	private LongWritable edgeValue;
-	private CoordinatesWritable targetPos;
+	private LongWritable edgeValue = new LongWritable();
+	private CoordinatesWritable targetPos = new CoordinatesWritable();
 	
 	public EdgeValueTypeWritable() {
 		

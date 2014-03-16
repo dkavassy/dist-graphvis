@@ -5,8 +5,8 @@ import java.io.IOException;
 
 public class CoordinatesPairWritable implements org.apache.hadoop.io.Writable {
 	
-	private CoordinatesWritable pos  = CoordinatesWritableFactory.create();
-	private CoordinatesWritable disp = CoordinatesWritableFactory.create();
+	private CoordinatesWritable pos  = new CoordinatesWritable();
+	private CoordinatesWritable disp = new CoordinatesWritable();
 	
 	public CoordinatesPairWritable() {
 		

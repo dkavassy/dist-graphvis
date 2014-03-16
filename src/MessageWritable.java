@@ -7,8 +7,8 @@ import org.apache.hadoop.io.IntWritable;
 
 public class MessageWritable implements org.apache.hadoop.io.Writable {
 	
-	private IntWritable srcId;
-	private CoordinatesWritable pos;
+	private IntWritable srcId = new IntWritable();
+	private CoordinatesWritable pos = new CoordinatesWritable();
 	
 	public MessageWritable() {
 		
