@@ -5,16 +5,17 @@ import org.apache.giraph.io.EdgeReader;
 import org.apache.giraph.io.formats.TextEdgeInputFormat;
 import org.apache.giraph.utils.IntPair;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 
-public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, NullWritable>{
+public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueTypeWritable>{
 
 	@Override
-	public EdgeReader<IntWritable, NullWritable> createEdgeReader(
+	public EdgeReader<IntWritable, EdgeValueTypeWritable> createEdgeReader(
 			InputSplit arg0, TaskAttemptContext arg1) throws IOException {
 		return new CSVEdgeReader();
 	}
@@ -47,8 +48,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, NullWri
 	    }
 
 	    @Override
-	    protected NullWritable getValue(IntPair endpoints) throws IOException {
-	      return NullWritable.get();
+	    protected EdgeValueTypeWritable getValue(IntPair endpoints) throws IOException {
+	      return new EdgeValueTypeWritable(new LongWritable(0L), new CoordinatesWritable(0,0));
 	    }
 	  }
 }

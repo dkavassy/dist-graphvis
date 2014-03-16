@@ -7,3 +7,5 @@
 /GraphVis.class
 /SVGVertexTextOutputFormat$SVGVertexWriter.class
 /SVGVertexTextOutputFormat.class
+/EdgeValueTypeWritable.class
+/MessageWritable.class

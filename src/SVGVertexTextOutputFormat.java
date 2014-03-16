@@ -1,12 +1,9 @@
-
-
-
 import java.io.IOException;
 
+import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.io.formats.TextVertexOutputFormat;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
@@ -21,7 +18,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 * @param <E> Edge value
 */
 @SuppressWarnings("rawtypes")
-public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends CoordinatesPairWritable, E extends Writable>
+public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends CoordinatesPairWritable, E extends EdgeValueTypeWritable>
 	extends TextVertexOutputFormat<I, V, E> 
 {
 
@@ -64,28 +61,21 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     	long x = vertex.getValue().getPos().getX();
     	long y = vertex.getValue().getPos().getY();
     	
-    	
     	StringBuilder str = new StringBuilder();
-    	String coordinateString = "";
+    	
+	    str.append(delimiter);
     	
     	// Create input svg style.
-    	coordinateString = "<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"green\" stroke-width=\"1\" fill=\"red\" />";
-	  
-	    str.append(delimiter);
-	    str.append(coordinateString);
+    	for (Edge edge : vertex.getEdges()) {
+    		str.append("<line x1=\"" + x + "\" y1=\"" + y
+    				+ "\" x2=\"" + ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
+    				+ "\" y2=\""
+    				+ ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
+    				+ "\" stroke=\"red\" stroke-width=\"2\" />");
+		}
+    	
+    	str.append("<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"green\" stroke-width=\"1\" fill=\"red\" />");
 	    
-	  /*if (reverseOutput) 
-	  {
-	    str.append(vertex.getValue().toString());
-	    str.append(delimiter);
-	    str.append(vertex.getId().toString());
-	  } else 
-	  {
-	    str.append(vertex.getId().toString());
-	    str.append(delimiter);
-	    str.append(vertex.getValue().toString());
-	  }
-	  */
 	  return new Text(str.toString());
     }
   }
