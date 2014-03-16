@@ -29,6 +29,7 @@ public class GraphVis extends BasicComputation<IntWritable, CoordinatesPairWrita
 			 // We assume that vertices are numbered 1..n where n is the number of vertices
 			 for (int i=1;i <= getTotalNumVertices(); i++)
 			 {
+				 //FIXME: exclude self
 				 sendMessage(new IntWritable(i),
 						 new MessageWritable(vertex.getId(),
 								 vertex.getValue().getPos()));
