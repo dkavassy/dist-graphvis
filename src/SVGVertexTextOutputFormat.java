@@ -1,5 +1,6 @@
 
 
+
 import java.io.IOException;
 
 import org.apache.giraph.graph.Vertex;
@@ -63,11 +64,12 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     	long x = vertex.getValue().getPos().getX();
     	long y = vertex.getValue().getPos().getY();
     	
+    	
     	StringBuilder str = new StringBuilder();
     	String coordinateString = "";
     	
     	// Create input svg style.
-    	coordinateString = "<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"green\" stroke-width=\"1\" fill=\"red\" />\"";
+    	coordinateString = "<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"green\" stroke-width=\"1\" fill=\"red\" />";
 	  
 	    str.append(delimiter);
 	    str.append(coordinateString);
