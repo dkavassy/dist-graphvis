@@ -45,5 +45,16 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	public long getY() {
 		return y;
 	}
+	
+	public double length() {
+		return Math.sqrt(x*x + y*y);
+	}
 
+	public CoordinatesWritable add(CoordinatesWritable other) {
+		return new CoordinatesWritable(getX() + other.getX(), getY() + other.getY());
+	}
+	
+	public CoordinatesWritable subtract(CoordinatesWritable other) {
+		return new CoordinatesWritable(getX() - other.getX(), getY() - other.getY());
+	}
 }
