@@ -70,7 +70,7 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     		str.append("<line x1=\"" + x + "\" y1=\"" + y
     				+ "\" x2=\"" + ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
     				+ "\" y2=\""
-    				+ ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
+    				+ ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()
     				+ "\" stroke=\"red\" stroke-width=\"2\" />");
 		}
     	

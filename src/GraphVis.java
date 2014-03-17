@@ -35,7 +35,7 @@ public class GraphVis extends BasicComputation<IntWritable, CoordinatesPairWrita
 								 vertex.getValue().getPos()));
 			 }
 			 
-			 vertex.voteToHalt();
-		 }
+			 
+		 }vertex.voteToHalt();
 	}
 }
