@@ -71,10 +71,10 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     				+ "\" x2=\"" + ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
     				+ "\" y2=\""
     				+ ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()
-    				+ "\" stroke=\"red\" stroke-width=\"2\" />");
+    				+ "\" stroke=\"blue\" stroke-width=\"0.2\" />");
 		}
     	
-    	str.append("<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"green\" stroke-width=\"1\" fill=\"red\" />");
+    	str.append("<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
 	    
 	  return new Text(str.toString());
     }
