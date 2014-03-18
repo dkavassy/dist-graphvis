@@ -54,7 +54,8 @@ public class GraphVis
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
 							LongWritable edgeValue=edge.getValue().getEdgeValue();
-							edge.getValue().set(edgeValue, messageWritable.getPos());
+							vertex.setEdgeValue(edge.getTargetVertexId(), 
+									new EdgeValueTypeWritable(edgeValue,messageWritable.getPos()));
 						}
 					}
 				}
@@ -178,7 +179,8 @@ public class GraphVis
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
 							LongWritable edgeValue=edge.getValue().getEdgeValue();
-							edge.getValue().set(edgeValue, messageWritable.getPos());
+							vertex.setEdgeValue(edge.getTargetVertexId(), 
+									new EdgeValueTypeWritable(edgeValue,messageWritable.getPos()));
 						}
 					}
 				}
