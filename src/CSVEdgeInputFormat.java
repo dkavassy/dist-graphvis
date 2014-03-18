@@ -49,7 +49,7 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 
 	    @Override
 	    protected EdgeValueTypeWritable getValue(IntPair endpoints) throws IOException {
-	      return new EdgeValueTypeWritable(new LongWritable(0L), new CoordinatesWritable( (long) (Math.random()*1000), (long) (Math.random()*1000) ));
+	      return new EdgeValueTypeWritable(new LongWritable(0L), new CoordinatesWritable());
 	    }
 	  }
 }

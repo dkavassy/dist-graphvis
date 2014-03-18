@@ -21,6 +21,9 @@ public class GraphVis
 	private static final long AREA = W * L;
 
 	private static final long T = 1000;
+	private static final long SPEED = 50;
+	
+	
 
 	@Override
 	public void compute(
@@ -30,7 +33,6 @@ public class GraphVis
 		// Set T in init!
 
 		if (getSuperstep() % 4 == 0) {
-
 			// Generate random position, only at the beginning!
 			if (getSuperstep() == 0) {
 				CoordinatesWritable pos = new CoordinatesWritable(
@@ -44,8 +46,22 @@ public class GraphVis
 				vertex.setValue(coords);
 			}
 			
+			//set target position to edge values, only in the final iteration
+			long t=((LongWritable)getAggregatedValue("temperature")).get();
+			if(t==0){
+				for(MessageWritable messageWritable : messages){
+					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
+						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
+							//keep original edge value
+							LongWritable edgeValue=edge.getValue().getEdgeValue();
+							edge.getValue().set(edgeValue, messageWritable.getPos());
+						}
+					}
+				}
+			}
+			
 			//send message only when temperature is not 0
-			long t=getAggregatedValue("temperature");
+			//long t= ((LongWritable) getAggregatedValue("temperature")).get();//don't need to get it again
 			if(t != 0){
 				//send messages
 				int myId = vertex.getId().get();
@@ -118,7 +134,7 @@ public class GraphVis
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
-			long t=getAggregatedValue("temperature");
+			long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
 			CoordinatesWritable change= disp.min(t).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
@@ -131,6 +147,8 @@ public class GraphVis
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
 					);
 			vertex.setValue(new CoordinatesPairWritable(pos, disp));
+			
+			
 			
 			
 		} else if (getSuperstep() % 4 == 3) {
@@ -152,13 +170,26 @@ public class GraphVis
 				disp= disp.add(dispChange);
 				//set new disp
 				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
+				
+				//set message to respective edge value, only in the final iteration
+				long t=((LongWritable)getAggregatedValue("temperature")).get();
+				if(t==SPEED){
+					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
+						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
+							//keep original edge value
+							LongWritable edgeValue=edge.getValue().getEdgeValue();
+							edge.getValue().set(edgeValue, messageWritable.getPos());
+						}
+					}
+				}
+				
 			}
 			//move position
 			// TODO implement the algorithm for moving
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
-			long t=getAggregatedValue("temperature");
+			long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
 			CoordinatesWritable change= disp.min(t).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
@@ -171,10 +202,19 @@ public class GraphVis
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
 					);
 			vertex.setValue(new CoordinatesPairWritable(pos, disp));
-			
-			
+
 			// Cool!
 			cool();
+			
+			//send its position to wake up everyone
+			// We assume that vertices are numbered 1..n where n is the number
+			// of vertices
+			for (int i = 1; i <= getTotalNumVertices(); i++) {
+				// Send position messages to everyone including self
+					sendMessage(new IntWritable(i),
+							new MessageWritable(vertex.getId(), vertex
+									.getValue().getPos()));
+			}
 		}
 
 		vertex.voteToHalt();
@@ -195,17 +235,17 @@ public class GraphVis
 	}
 
 	private void cool() {
-		long currentTemp = getAggregatedValue("temperature");
-		aggregate("temperature", new LongWritable(currentTemp - 5L));
+		long currentTemp = ((LongWritable)getAggregatedValue("temperature")).get();
+		aggregate("temperature", new LongWritable(currentTemp - SPEED));
 	}
 
 	private double fa(double x) {
-		double k = getAggregatedValue("k");
+		double k = ((DoubleWritable)getAggregatedValue("k")).get();
 		return x * x / k;
 	}
 
 	private double fr(double x) {
-		double k = getAggregatedValue("k");
+		double k = ((DoubleWritable)getAggregatedValue("k")).get();
 		return k * k / x;
 	}
 
