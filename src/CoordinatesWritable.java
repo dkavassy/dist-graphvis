@@ -5,32 +5,32 @@ import java.io.IOException;
 
 public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	
-	private long x = 0;
-	private long y = 0;
+	private double x = 0;
+	private double y = 0;
 	
 	public CoordinatesWritable() {
 		
 	}
 	
-	public CoordinatesWritable(long x, long y) {
+	public CoordinatesWritable(double x, double y) {
 		set(x, y);
 	}
 
-	public void set(long x2, long y2) {
+	public void set(double x2, double y2) {
 		this.x = x2;
 		this.y = y2;
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		x = in.readLong();
-		y = in.readLong();
+		x = in.readDouble();
+		y = in.readDouble();
 	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		out.writeLong(x);
-		out.writeLong(y);
+		out.writeDouble(x);
+		out.writeDouble(y);
 	}
 	
 	@Override
@@ -38,11 +38,11 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 		return "x: " + x + "; y: " + y;
 	}
 
-	public long getX() {
+	public double getX() {
 		return x;
 	}
 
-	public long getY() {
+	public double getY() {
 		return y;
 	}
 	
@@ -56,5 +56,13 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	
 	public CoordinatesWritable subtract(CoordinatesWritable other) {
 		return new CoordinatesWritable(getX() - other.getX(), getY() - other.getY());
+	}
+	//fake multiply
+	public CoordinatesWritable multiply(CoordinatesWritable other) {
+		return new CoordinatesWritable(getX() * other.getX(), getY() * other.getY());
+	}
+	 
+	public CoordinatesWritable min(long other) {
+		return new CoordinatesWritable(Math.min(getX(), other),Math.min(getY(), other));
 	}
 }

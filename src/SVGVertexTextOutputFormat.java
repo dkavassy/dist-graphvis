@@ -58,8 +58,8 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     @Override
     protected Text convertVertexToLine(Vertex<I, V, E> vertex) throws IOException 
     {
-    	long x = vertex.getValue().getPos().getX();
-    	long y = vertex.getValue().getPos().getY();
+    	double x = vertex.getValue().getPos().getX();
+    	double y = vertex.getValue().getPos().getY();
     	
     	StringBuilder str = new StringBuilder();
     	
