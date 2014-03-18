@@ -20,9 +20,9 @@ public class GraphVis
 	private static final long L = 1000;
 	private static final long AREA = W * L;
 
-	private static final long T = 1000;
+	private static  long T = 1000;
 	private static final long SPEED = 50;
-	
+	private static double k=AREA;
 	
 
 	@Override
@@ -47,8 +47,8 @@ public class GraphVis
 			}
 			
 			//set target position to edge values, only in the final iteration
-			long t=((LongWritable)getAggregatedValue("temperature")).get();
-			if(t==0){
+			//long t=((LongWritable)getAggregatedValue("temperature")).get();
+			if(T==0){
 				for(MessageWritable messageWritable : messages){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
@@ -63,7 +63,7 @@ public class GraphVis
 			
 			//send message only when temperature is not 0
 			//long t= ((LongWritable) getAggregatedValue("temperature")).get();//don't need to get it again
-			if(t != 0){
+			if(T != 0){
 				//send messages
 				int myId = vertex.getId().get();
 				// We assume that vertices are numbered 1..n where n is the number
@@ -135,9 +135,9 @@ public class GraphVis
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
-			long t=((LongWritable)getAggregatedValue("temperature")).get();
+			//long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
-			CoordinatesWritable change= disp.min(t).multiply(new CoordinatesWritable(
+			CoordinatesWritable change= disp.min(T).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
 					disp.getY()/dispLength
 					));
@@ -173,8 +173,8 @@ public class GraphVis
 				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
 				
 				//set message to respective edge value, only in the final iteration
-				long t=((LongWritable)getAggregatedValue("temperature")).get();
-				if(t==SPEED){
+				//long t=((LongWritable)getAggregatedValue("temperature")).get();
+				if(T==SPEED){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
@@ -191,9 +191,9 @@ public class GraphVis
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
-			long t=((LongWritable)getAggregatedValue("temperature")).get();
+			//long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
-			CoordinatesWritable change= disp.min(t).multiply(new CoordinatesWritable(
+			CoordinatesWritable change= disp.min(T).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
 					disp.getY()/dispLength
 					));
@@ -232,22 +232,24 @@ public class GraphVis
 		super.initialize(graphState, workerClientRequestProcessor,
 				graphTaskManager, workerAggregatorUsage, workerContext);
 
-		aggregate("temperature", new LongWritable(T));
-		aggregate("k", new DoubleWritable(AREA / getTotalNumVertices()));
+		//aggregate("temperature", new LongWritable(T));
+		//aggregate("k", new DoubleWritable(AREA / getTotalNumVertices()));
+		k=AREA / getTotalNumVertices();
 	}
 
 	private void cool() {
-		long currentTemp = ((LongWritable)getAggregatedValue("temperature")).get();
-		aggregate("temperature", new LongWritable(currentTemp - SPEED));
+		//long currentTemp = ((LongWritable)getAggregatedValue("temperature")).get();
+		//aggregate("temperature", new LongWritable(currentTemp - SPEED));
+		T=T-SPEED;
 	}
 
 	private double fa(double x) {
-		double k = ((DoubleWritable)getAggregatedValue("k")).get();
+		//double k = ((DoubleWritable)getAggregatedValue("k")).get();
 		return x * x / k;
 	}
 
 	private double fr(double x) {
-		double k = ((DoubleWritable)getAggregatedValue("k")).get();
+		//double k = ((DoubleWritable)getAggregatedValue("k")).get();
 		return k * k / x;
 	}
 
