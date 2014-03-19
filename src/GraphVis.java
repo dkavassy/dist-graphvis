@@ -21,7 +21,7 @@ public class GraphVis
 	private static final long AREA = W * L;
 
 	private static  long T = 1000;
-	private static final long SPEED = 50;
+	private static final long SPEED = 1000;
 	private static double k=AREA;
 	
 
@@ -48,7 +48,7 @@ public class GraphVis
 			
 			//set target position to edge values, only in the final iteration
 			//long t=((LongWritable)getAggregatedValue("temperature")).get();
-			if(T==0){
+			if(getSuperstep() != 0){//T==0){
 				for(MessageWritable messageWritable : messages){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
@@ -59,6 +59,7 @@ public class GraphVis
 						}
 					}
 				}
+				//messages=null;
 
 			}
 			
@@ -69,7 +70,7 @@ public class GraphVis
 				int myId = vertex.getId().get();
 				// We assume that vertices are numbered 1..n where n is the number
 				// of vertices
-				for (int i = 1; i <= getTotalNumVertices(); i++) {
+				for (int i = 1; i <= 128; i++) {
 					// Send position messages to everyone except self
 					if (i != myId) {
 						sendMessage(new IntWritable(i),
@@ -97,6 +98,7 @@ public class GraphVis
 				//set new disp
 				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
 			}
+			//messages=null;
 			//send new pos message to neighbors
 			//int myId = vertex.getId().get();
 			for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
@@ -131,6 +133,7 @@ public class GraphVis
 						new MessageWritable(vertex.getId(), vertex
 								.getValue().getPos()));
 			}
+			//messages=null;
 			//move position
 			// TODO implement the algorithm for moving
 			CoordinatesWritable pos = vertex.getValue().getPos();
@@ -175,7 +178,7 @@ public class GraphVis
 				
 				//set message to respective edge value, only in the final iteration
 				//long t=((LongWritable)getAggregatedValue("temperature")).get();
-				if(T<=SPEED){
+				if(true){//T<=SPEED){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
@@ -187,6 +190,7 @@ public class GraphVis
 				}
 				
 			}
+			//messages=null;
 			//move position
 			// TODO implement the algorithm for moving
 			CoordinatesWritable pos = vertex.getValue().getPos();
@@ -207,12 +211,13 @@ public class GraphVis
 			vertex.setValue(new CoordinatesPairWritable(pos, disp));
 
 			// Cool!
+			if(vertex.getId().get()==1){
 			cool();
-			
+			}
 			//send its position to wake up everyone
 			// We assume that vertices are numbered 1..n where n is the number
 			// of vertices
-			for (int i = 1; i <= getTotalNumVertices(); i++) {
+			for (int i = 1; i <= 128; i++) {
 				// Send position messages to everyone including self
 					sendMessage(new IntWritable(i),
 							new MessageWritable(vertex.getId(), vertex
@@ -235,7 +240,7 @@ public class GraphVis
 
 		//aggregate("temperature", new LongWritable(T));
 		//aggregate("k", new DoubleWritable(AREA / getTotalNumVertices()));
-		k=AREA / getTotalNumVertices();
+		k=AREA / 128;
 	}
 
 	private void cool() {

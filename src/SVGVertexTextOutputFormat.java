@@ -74,7 +74,7 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     				+ "\" stroke=\"blue\" stroke-width=\"0.2\" />");
 		}
     	
-    	str.append("<circle cx=\""+ (x+500) + "\" cy=\""+ (y+500) +"\" r=\"2\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
+    	str.append("<circle cx=\""+ (x+500) + "\" cy=\""+ (y+500) +"\" r=\"5\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
 	    
 	  return new Text(str.toString());
     }
