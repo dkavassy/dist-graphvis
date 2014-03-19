@@ -67,14 +67,14 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     	
     	// Create input svg style.
     	for (Edge edge : vertex.getEdges()) {
-    		str.append("<line x1=\"" + x + "\" y1=\"" + y
-    				+ "\" x2=\"" + ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()
+    		str.append("<line x1=\"" + (x+500) + "\" y1=\"" + (y+500)
+    				+ "\" x2=\"" + (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()+500)
     				+ "\" y2=\""
-    				+ ((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()
+    				+ (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()+500)
     				+ "\" stroke=\"blue\" stroke-width=\"0.2\" />");
 		}
     	
-    	str.append("<circle cx=\""+ x + "\" cy=\""+ y +"\" r=\"2\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
+    	str.append("<circle cx=\""+ (x+500) + "\" cy=\""+ (y+500) +"\" r=\"2\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
 	    
 	  return new Text(str.toString());
     }

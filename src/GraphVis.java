@@ -59,11 +59,12 @@ public class GraphVis
 						}
 					}
 				}
+
 			}
 			
-			//send message only when temperature is not 0
+			//send message only when temperature is > 0
 			//long t= ((LongWritable) getAggregatedValue("temperature")).get();//don't need to get it again
-			if(T != 0){
+			if(T > 0){
 				//send messages
 				int myId = vertex.getId().get();
 				// We assume that vertices are numbered 1..n where n is the number
@@ -174,7 +175,7 @@ public class GraphVis
 				
 				//set message to respective edge value, only in the final iteration
 				//long t=((LongWritable)getAggregatedValue("temperature")).get();
-				if(T==SPEED){
+				if(T<=SPEED){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
