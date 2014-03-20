@@ -58,8 +58,8 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     @Override
     protected Text convertVertexToLine(Vertex<I, V, E> vertex) throws IOException 
     {
-    	double x = vertex.getValue().getPos().getX();
-    	double y = vertex.getValue().getPos().getY();
+    	long x = (long) vertex.getValue().getPos().getX();
+    	long y = (long) vertex.getValue().getPos().getY();
     	
     	StringBuilder str = new StringBuilder();
     	
@@ -67,15 +67,24 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     	
     	// Create input svg style.
     	for (Edge edge : vertex.getEdges()) {
+    		
+    		long x2 = (long) (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()+500);
+    		long y2 = (long) (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()+500);
     		str.append("<line x1=\"" + (x+500) + "\" y1=\"" + (y+500)
-    				+ "\" x2=\"" + (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()+500)
+    				+ "\" x2=\"" + x2
     				+ "\" y2=\""
-    				+ (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()+500)
-    				+ "\" stroke=\"blue\" stroke-width=\"0.2\" />");
+    				+ y2
+    				+ "\" stroke=\"blue\" stroke-width=\"0.05\" />");
+    		
+    		str.append("<circle cx=\""
+    				+ x2 + "\" cy=\""
+    				+ y2
+    				+"\" r=\"10\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
 		}
     	
-    	str.append("<circle cx=\""+ (x+500) + "\" cy=\""+ (y+500) +"\" r=\"5\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
-	    
+    	str.append("<circle cx=\""+ (x+500) + "\" cy=\""+ (y+500) +"\" r=\"10\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
+    	
+ 	   
 	  return new Text(str.toString());
     }
   }

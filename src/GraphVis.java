@@ -27,8 +27,8 @@ public class GraphVis
 	private static final long L = 1000;
 	private static final long AREA = 10000*10000;
 
-	private static  long T = 100;
-	private static final long SPEED = 1;
+	private static  double T = 100;
+	private static final double SPEED = 1;
 	private static final long LIMIT = 300;//changed
 	private static double k;
 	private static final double MIN_DIST=0.1;
@@ -328,12 +328,12 @@ public class GraphVis
 
 	private double fa(double x) {
 		//double k = ((DoubleWritable)getAggregatedValue("k")).get();
-		return x * x / k;
+		return 20000.0d*x * x / k;
 	}
 
 	private double fr(double x) {
 		//double k = ((DoubleWritable)getAggregatedValue("k")).get();
-		return k * k / x;
+		return 0.01d*k * k / x;
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 		return new CoordinatesWritable(getX() * other.getX(), getY() * other.getY());
 	}
 	 
-	public CoordinatesWritable min(long other) {
-		return new CoordinatesWritable(Math.min(getX(), other),Math.min(getY(), other));
+	public CoordinatesWritable min(double t) {
+		return new CoordinatesWritable(Math.min(getX(), t),Math.min(getY(), t));
 	}
 }
