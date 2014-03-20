@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Random;
 
 import org.apache.giraph.comm.WorkerClientRequestProcessor;
 import org.apache.giraph.edge.Edge;
@@ -12,18 +13,25 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 
+
+
+
+
+
+
 public class GraphVis
 		extends
 		BasicComputation<IntWritable, CoordinatesPairWritable, EdgeValueTypeWritable, MessageWritable> {
 
 	private static final long W = 1000;
 	private static final long L = 1000;
-	private static final long AREA = W * L;
+	private static final long AREA = 10000*10000;
 
-	private static  long T = 1000;
-	private static final long SPEED = 1000;
-	private static double k=AREA;
-	
+	private static  long T = 100;
+	private static final long SPEED = 1;
+	private static final long LIMIT = 300;//changed
+	private static double k;
+	private static final double MIN_DIST=0.1;
 
 	@Override
 	public void compute(
@@ -35,9 +43,10 @@ public class GraphVis
 		if (getSuperstep() % 4 == 0) {
 			// Generate random position, only at the beginning!
 			if (getSuperstep() == 0) {
+				Random random = new Random();
 				CoordinatesWritable pos = new CoordinatesWritable(
-						(double) (Math.random() * 1000),
-						(double) (Math.random() * 1000));
+						(double) ((random.nextDouble()-0.5) * 1000),
+						(double) ((random.nextDouble()-0.5) * 1000));
 				CoordinatesWritable disp = new CoordinatesWritable();
 
 				CoordinatesPairWritable coords = new CoordinatesPairWritable(
@@ -48,7 +57,7 @@ public class GraphVis
 			
 			//set target position to edge values, only in the final iteration
 			//long t=((LongWritable)getAggregatedValue("temperature")).get();
-			if(getSuperstep() != 0){//T==0){
+			if(true){//T==0){
 				for(MessageWritable messageWritable : messages){
 					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
@@ -70,7 +79,7 @@ public class GraphVis
 				int myId = vertex.getId().get();
 				// We assume that vertices are numbered 1..n where n is the number
 				// of vertices
-				for (int i = 1; i <= 128; i++) {
+				for (int i = 1; i <= getTotalNumVertices(); i++) {
 					// Send position messages to everyone except self
 					if (i != myId) {
 						sendMessage(new IntWritable(i),
@@ -88,6 +97,15 @@ public class GraphVis
 				CoordinatesWritable disp = new CoordinatesWritable();//v.disp:=0!, will be useful from second iteration
 				CoordinatesWritable delta = ownPos.subtract(otherPos);
 				double deltaLength = delta.length();
+				
+				
+				
+				//if in the same place, give it a relatively small distance
+				if(deltaLength==0){
+					deltaLength=MIN_DIST;
+				}
+				
+				
 				double frResult=fr(deltaLength);
 				//calculate the new displacement
 				CoordinatesWritable dispChange=new CoordinatesWritable(
@@ -118,6 +136,12 @@ public class GraphVis
 				CoordinatesWritable disp = vertex.getValue().getDisp();
 				CoordinatesWritable delta = ownPos.subtract(otherPos);
 				double deltaLength = delta.length();
+				
+				//if in the same place, give it a relatively small distance
+				if(deltaLength==0){
+					deltaLength=MIN_DIST;
+				}
+				
 				double faResult=fa(deltaLength);
 				//calculate the new displacement
 				CoordinatesWritable dispChange=new CoordinatesWritable(
@@ -128,7 +152,7 @@ public class GraphVis
 				//set new disp
 				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
 				
-				//reply this message
+				//reply this message(can be optimized to send delta)
 				sendMessage(messageWritable.getSrcId(),
 						new MessageWritable(vertex.getId(), vertex
 								.getValue().getPos()));
@@ -139,19 +163,41 @@ public class GraphVis
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
+			
+			//cannot be 0
+			if(dispLength==0){
+				dispLength=1;//any number should work, as disp is 0
+			}
+			
 			//long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
 			CoordinatesWritable change= disp.min(T).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
 					disp.getY()/dispLength
 					));
+			
+			//CoordinatesWritable change =disp;//added
+			/*double gravity=10;
+			//dispLength: double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
+	        double gf = 0.01d * Math.sqrt(1000*1000/128) * (float) gravity * dispLength;
+	        change=new CoordinatesWritable( change.getX()-(gf * pos.getX() / dispLength),change.getY()-(gf * pos.getY() / dispLength));
+			//to a small number
+			change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);
+			//limit*/
+			double limitedDist = Math.min(W * ((double) 1 / LIMIT), dispLength);
+			change=new CoordinatesWritable(change.getX()/dispLength*limitedDist,change.getY()/dispLength*limitedDist);
+			
 			//set new position
 			pos=pos.add(change);
+			
+			
+			
+			
 			//prevent it from outside frame
-			pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
+			/*pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
-					);
-			vertex.setValue(new CoordinatesPairWritable(pos, disp));
+					);*/
+			vertex.setValue(new CoordinatesPairWritable(pos, new CoordinatesWritable()));//clear the disp
 			
 			
 			
@@ -164,8 +210,15 @@ public class GraphVis
 				CoordinatesWritable ownPos = vertex.getValue().getPos();
 				CoordinatesWritable otherPos = messageWritable.getPos();
 				CoordinatesWritable disp = vertex.getValue().getDisp();
-				CoordinatesWritable delta = ownPos.subtract(otherPos);
+				CoordinatesWritable delta = otherPos.subtract(ownPos);
 				double deltaLength = delta.length();
+				
+				//distance is 0, give it a very small distance
+				if(deltaLength==0){
+					deltaLength=MIN_DIST;
+				}
+				
+				
 				double faResult=fa(deltaLength);
 				//calculate the new displacement
 				CoordinatesWritable dispChange=new CoordinatesWritable(
@@ -196,18 +249,42 @@ public class GraphVis
 			CoordinatesWritable pos = vertex.getValue().getPos();
 			CoordinatesWritable disp = vertex.getValue().getDisp();
 			double dispLength = disp.length();
+			
+			//cannot be 0
+			if(dispLength==0){
+				dispLength=1;
+			}
+			
 			//long t=((LongWritable)getAggregatedValue("temperature")).get();
 			//calculate change value, limit it to t
 			CoordinatesWritable change= disp.min(T).multiply(new CoordinatesWritable(
 					disp.getX()/dispLength,
 					disp.getY()/dispLength
 					));
+			
+			/*CoordinatesWritable change =disp;//added
+			
+			double gravity=10;
+			//dispLength: double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
+	        double gf = 0.01d * Math.sqrt(1000*1000/128) * (float) gravity * dispLength;
+	        change=new CoordinatesWritable( change.getX()-(gf * pos.getX() / dispLength),change.getY()-(gf * pos.getY() / dispLength));
+			//to a small number
+			change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);
+			//limit*/
+			double limitedDist = Math.min(W/2 * ((double) 1 / LIMIT), dispLength);
+			change=new CoordinatesWritable(change.getX()/dispLength*limitedDist,change.getY()/dispLength*limitedDist);
+			
 			//set new position
 			pos=pos.add(change);
+	
+			
+			
+			
+			
 			//prevent it from outside frame
-			pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
+			/*pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
-					);
+					);*/
 			vertex.setValue(new CoordinatesPairWritable(pos, disp));
 
 			// Cool!
@@ -217,7 +294,7 @@ public class GraphVis
 			//send its position to wake up everyone
 			// We assume that vertices are numbered 1..n where n is the number
 			// of vertices
-			for (int i = 1; i <= 128; i++) {
+			for (int i = 1; i <= getTotalNumVertices(); i++) {
 				// Send position messages to everyone including self
 					sendMessage(new IntWritable(i),
 							new MessageWritable(vertex.getId(), vertex
@@ -240,7 +317,7 @@ public class GraphVis
 
 		//aggregate("temperature", new LongWritable(T));
 		//aggregate("k", new DoubleWritable(AREA / getTotalNumVertices()));
-		k=AREA / 128;
+		k=Math.sqrt(AREA / getTotalNumVertices());
 	}
 
 	private void cool() {
