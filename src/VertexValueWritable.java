@@ -3,16 +3,16 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 
-public class CoordinatesPairWritable implements org.apache.hadoop.io.Writable {
+public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	
 	private CoordinatesWritable pos  = new CoordinatesWritable();
 	private CoordinatesWritable disp = new CoordinatesWritable();
 	
-	public CoordinatesPairWritable() {
+	public VertexValueWritable() {
 		
 	}
 	
-	public CoordinatesPairWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
+	public VertexValueWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
 		set(pos, disp);
 	}
 

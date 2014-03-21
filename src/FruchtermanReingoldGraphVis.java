@@ -19,23 +19,22 @@ import org.apache.hadoop.io.LongWritable;
 
 
 
-public class GraphVis
+public class FruchtermanReingoldGraphVis
 		extends
-		BasicComputation<IntWritable, CoordinatesPairWritable, EdgeValueTypeWritable, MessageWritable> {
+		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
 
-	private static final long W = 1000;
-	private static final long L = 1000;
-	private static final long AREA = 10000*10000;
+	private static long W;
+	private static long AREA;
 
-	private static  double T = 100;
-	private static final double SPEED = 1;
-	private static final long LIMIT = 300;//changed
+	private static double T;
+	private static double SPEED;
+	private static long LIMIT;//changed
 	private static double k;
 	private static final double MIN_DIST=0.1;
 
 	@Override
 	public void compute(
-			Vertex<IntWritable, CoordinatesPairWritable, EdgeValueTypeWritable> vertex,
+			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
 			Iterable<MessageWritable> messages) throws IOException {
 
 		// Set T in init!
@@ -49,7 +48,7 @@ public class GraphVis
 						(double) ((random.nextDouble()-0.5) * 1000));
 				CoordinatesWritable disp = new CoordinatesWritable();
 
-				CoordinatesPairWritable coords = new CoordinatesPairWritable(
+				VertexValueWritable coords = new VertexValueWritable(
 						pos, disp);
 
 				vertex.setValue(coords);
@@ -59,12 +58,12 @@ public class GraphVis
 			//long t=((LongWritable)getAggregatedValue("temperature")).get();
 			if(true){//T==0){
 				for(MessageWritable messageWritable : messages){
-					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
+					for (Edge<IntWritable,EdgeValueWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
 							LongWritable edgeValue=edge.getValue().getEdgeValue();
 							vertex.setEdgeValue(edge.getTargetVertexId(), 
-									new EdgeValueTypeWritable(edgeValue,messageWritable.getPos()));
+									new EdgeValueWritable(edgeValue,messageWritable.getPos()));
 						}
 					}
 				}
@@ -114,12 +113,12 @@ public class GraphVis
 						);
 				disp= disp.add(dispChange);
 				//set new disp
-				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
+				vertex.setValue(new VertexValueWritable(ownPos, disp));
 			}
 			//messages=null;
 			//send new pos message to neighbors
 			//int myId = vertex.getId().get();
-			for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
+			for (Edge<IntWritable,EdgeValueWritable> edge : vertex.getEdges()){
 				sendMessage(edge.getTargetVertexId(),
 						new MessageWritable(vertex.getId(), vertex
 								.getValue().getPos()));
@@ -150,7 +149,7 @@ public class GraphVis
 						);
 				disp= disp.subtract(dispChange);
 				//set new disp
-				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
+				vertex.setValue(new VertexValueWritable(ownPos, disp));
 				
 				//reply this message(can be optimized to send delta)
 				sendMessage(messageWritable.getSrcId(),
@@ -197,7 +196,7 @@ public class GraphVis
 			/*pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
 					);*/
-			vertex.setValue(new CoordinatesPairWritable(pos, new CoordinatesWritable()));//clear the disp
+			vertex.setValue(new VertexValueWritable(pos, new CoordinatesWritable()));//clear the disp
 			
 			
 			
@@ -227,17 +226,17 @@ public class GraphVis
 						);
 				disp= disp.add(dispChange);
 				//set new disp
-				vertex.setValue(new CoordinatesPairWritable(ownPos, disp));
+				vertex.setValue(new VertexValueWritable(ownPos, disp));
 				
 				//set message to respective edge value, only in the final iteration
 				//long t=((LongWritable)getAggregatedValue("temperature")).get();
 				if(true){//T<=SPEED){
-					for (Edge<IntWritable,EdgeValueTypeWritable> edge : vertex.getEdges()){
+					for (Edge<IntWritable,EdgeValueWritable> edge : vertex.getEdges()){
 						if(edge.getTargetVertexId().compareTo(messageWritable.getSrcId())==0){
 							//keep original edge value
 							LongWritable edgeValue=edge.getValue().getEdgeValue();
 							vertex.setEdgeValue(edge.getTargetVertexId(), 
-									new EdgeValueTypeWritable(edgeValue,messageWritable.getPos()));
+									new EdgeValueWritable(edgeValue,messageWritable.getPos()));
 						}
 					}
 				}
@@ -285,7 +284,7 @@ public class GraphVis
 			/*pos.set(Math.min(W/2, Math.max(-W/2, pos.getX())),
 					Math.min(L/2, Math.max(-L/2, pos.getY()))
 					);*/
-			vertex.setValue(new CoordinatesPairWritable(pos, disp));
+			vertex.setValue(new VertexValueWritable(pos, disp));
 
 			// Cool!
 			if(vertex.getId().get()==1){
@@ -308,16 +307,20 @@ public class GraphVis
 	@Override
 	public void initialize(
 			GraphState graphState,
-			WorkerClientRequestProcessor<IntWritable, CoordinatesPairWritable, EdgeValueTypeWritable> workerClientRequestProcessor,
-			GraphTaskManager<IntWritable, CoordinatesPairWritable, EdgeValueTypeWritable> graphTaskManager,
+			WorkerClientRequestProcessor<IntWritable, VertexValueWritable, EdgeValueWritable> workerClientRequestProcessor,
+			GraphTaskManager<IntWritable, VertexValueWritable, EdgeValueWritable> graphTaskManager,
 			WorkerAggregatorUsage workerAggregatorUsage,
 			WorkerContext workerContext) {
 		super.initialize(graphState, workerClientRequestProcessor,
 				graphTaskManager, workerAggregatorUsage, workerContext);
-
-		//aggregate("temperature", new LongWritable(T));
-		//aggregate("k", new DoubleWritable(AREA / getTotalNumVertices()));
+		
+		//generate constants by number vertices
+		W= getTotalNumVertices() * 10;
+		AREA=W*W;
+		T=W/10;
 		k=Math.sqrt(AREA / getTotalNumVertices());
+		SPEED=T/100;
+		LIMIT = (long) SPEED*300;
 	}
 
 	private void cool() {
@@ -336,9 +339,5 @@ public class GraphVis
 		return 0.01d*k * k / x;
 	}
 
-	@Override
-	public void postSuperstep() {
-		// TODO Auto-generated method stub
-		super.postSuperstep();
-	}
+	
 }

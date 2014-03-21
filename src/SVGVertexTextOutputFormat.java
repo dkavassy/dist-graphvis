@@ -18,7 +18,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 * @param <E> Edge value
 */
 @SuppressWarnings("rawtypes")
-public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends CoordinatesPairWritable, E extends EdgeValueTypeWritable>
+public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends VertexValueWritable, E extends EdgeValueWritable>
 	extends TextVertexOutputFormat<I, V, E> 
 {
 
@@ -68,8 +68,8 @@ public class SVGVertexTextOutputFormat<I extends WritableComparable, V extends C
     	// Create input svg style.
     	for (Edge edge : vertex.getEdges()) {
     		
-    		long x2 = (long) (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getX()+500);
-    		long y2 = (long) (((EdgeValueTypeWritable)edge.getValue()).getTargetPos().getY()+500);
+    		long x2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getX()+500);
+    		long y2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getY()+500);
     		str.append("<line x1=\"" + (x+500) + "\" y1=\"" + (y+500)
     				+ "\" x2=\"" + x2
     				+ "\" y2=\""

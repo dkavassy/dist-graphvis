@@ -12,10 +12,10 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 
-public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueTypeWritable>{
+public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueWritable>{
 
 	@Override
-	public EdgeReader<IntWritable, EdgeValueTypeWritable> createEdgeReader(
+	public EdgeReader<IntWritable, EdgeValueWritable> createEdgeReader(
 			InputSplit arg0, TaskAttemptContext arg1) throws IOException {
 		return new CSVEdgeReader();
 	}
@@ -48,8 +48,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 	    }
 
 	    @Override
-	    protected EdgeValueTypeWritable getValue(IntPair endpoints) throws IOException {
-	      return new EdgeValueTypeWritable(new LongWritable(0L), new CoordinatesWritable());
+	    protected EdgeValueWritable getValue(IntPair endpoints) throws IOException {
+	      return new EdgeValueWritable(new LongWritable(0L), new CoordinatesWritable());
 	    }
 	  }
 }

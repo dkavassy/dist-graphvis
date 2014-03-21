@@ -5,16 +5,16 @@ import java.io.IOException;
 import org.apache.hadoop.io.LongWritable;
 
 
-public class EdgeValueTypeWritable implements org.apache.hadoop.io.Writable {
+public class EdgeValueWritable implements org.apache.hadoop.io.Writable {
 	
 	private LongWritable edgeValue = new LongWritable();
 	private CoordinatesWritable targetPos = new CoordinatesWritable();
 	
-	public EdgeValueTypeWritable() {
+	public EdgeValueWritable() {
 		
 	}
 	
-	public EdgeValueTypeWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
+	public EdgeValueWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
 		set(edgeValue, targetValue);
 	}
 
