@@ -9,7 +9,6 @@ import org.apache.giraph.graph.GraphTaskManager;
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.worker.WorkerAggregatorUsage;
 import org.apache.giraph.worker.WorkerContext;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 
@@ -18,11 +17,11 @@ public class FruchtermanReingoldGraphVis
 		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
 
 	private static long W=1000;
-	private static long AREA=1000*1000;
+	private static long AREA=10000*10000;
 
-	private static double T=100;
-	private static double SPEED=1;
-	private static long LIMIT=300;// changed
+	private static double T=1000;
+	private static double SPEED=10;
+	private static long LIMIT=800;// changed
 	private static double k;
 	private static final double MIN_DIST = 0.1;
 
@@ -121,13 +120,25 @@ public class FruchtermanReingoldGraphVis
 			dispLength = 1;// any number should work, as disp is 0
 		}
 
-		// calculate change value, limit it to t
+		/*// calculate change value, limit it to t
 		CoordinatesWritable change = disp.min(T).multiply(
 				new CoordinatesWritable(disp.getX() / dispLength, disp.getY()
-						/ dispLength));
-
+						/ dispLength));*/
+		
+		
+		//gravity
+		CoordinatesWritable change =disp;//added
+		/*double gravity=10;
+		//dispLength: double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
+		double gf = 0.01d * k * (float) gravity * dispLength;
+		change=new CoordinatesWritable( change.getX()-(gf * pos.getX() / dispLength),change.getY()-(gf * pos.getY() / dispLength));
+		//to a small number
+		change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);*/
+		
+		
+		
 		// limit
-		double limitedDist = Math.min(W * ((double) 1 / LIMIT), dispLength);
+		double limitedDist = Math.min(Math.sqrt(AREA/10) * ((double) 1 / LIMIT), dispLength);
 		change = new CoordinatesWritable(change.getX() / dispLength
 				* limitedDist, change.getY() / dispLength * limitedDist);
 
@@ -255,7 +266,8 @@ public class FruchtermanReingoldGraphVis
 		Random random = new Random();
 		CoordinatesWritable pos = new CoordinatesWritable(
 				(double) ((random.nextDouble() - 0.5) * 1000),
-				(double) ((random.nextDouble() - 0.5) * 1000));
+				(double) ((random.nextDouble() - 0.5) * 1000)
+				);
 		CoordinatesWritable disp = new CoordinatesWritable();
 
 		VertexValueWritable coords = new VertexValueWritable(pos, disp);
@@ -288,13 +300,13 @@ public class FruchtermanReingoldGraphVis
 	}
 
 	private double fa(double x) {
-
-		return 20000.0d * x * x / k;
+		//2000000000.0d *
+		return  x * x / k;
 	}
 
 	private double fr(double x) {
 
-		return 0.01d * k * k / x;
+		return  k * k / x;
 	}
 
 }
