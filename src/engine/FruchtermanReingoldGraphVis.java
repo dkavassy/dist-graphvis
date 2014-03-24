@@ -37,29 +37,28 @@ public class FruchtermanReingoldGraphVis
 				generateRandomLayout(vertex);
 			}
 			
-			//move position
-			if (getSuperstep() != 0) {
-			moveVertex(vertex);
-			}
-			
 			// set target position to edge values, only in the final iteration
 			if (T <= 0) {
 				setEdgeValuesForOutPut(vertex, messages);
 
 			}
 
-			// send message only when temperature is > 0
-			if (T > 0) {
-				// send messages
-				sendOwnPositionToEveryVertex(vertex);
-			}
+			// send messages
+			sendOwnPositionToEveryVertex(vertex);
+			
 
 		} else if (getSuperstep() % 4 == 1) {
+			
+			
+			//move position
+			moveVertex(vertex);
+			if(T > 0){
 			// calculate repulsive forces between everyone except self
 			calculateRepulsiveForces(vertex, messages);
 
 			// send new pos message to neighbors
 			sendOwnPositionToNeighbors(vertex);
+			}
 
 		} else if (getSuperstep() % 4 == 2) {
 			// anyone who received a message, calculate displacement, then
