@@ -1,3 +1,4 @@
+package engine;
 import java.io.IOException;
 import java.util.Random;
 
@@ -16,14 +17,13 @@ public class FruchtermanReingoldGraphVis
 		extends
 		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
 
-	private static long W=1000;
-	private static long AREA=10000*10000;
+	private static double AREA=10000*10000;
 
 	private static double T=1000;
-	private static double SPEED=10;
-	private static long LIMIT=800;// changed
+	private static double SPEED=200;
+	private static double LIMIT=800;// changed
 	private static double k;
-	private static final double MIN_DIST = 0.1;
+	private static final double MIN_DIST = 0.0000001;
 
 	@Override
 	public void compute(
@@ -36,7 +36,12 @@ public class FruchtermanReingoldGraphVis
 			if (getSuperstep() == 0) {
 				generateRandomLayout(vertex);
 			}
-
+			
+			//move position
+			if (getSuperstep() != 0) {
+			moveVertex(vertex);
+			}
+			
 			// set target position to edge values, only in the final iteration
 			if (T <= 0) {
 				setEdgeValuesForOutPut(vertex, messages);
@@ -67,15 +72,19 @@ public class FruchtermanReingoldGraphVis
 				CoordinatesWritable otherPos = messageWritable.getPos();
 				CoordinatesWritable disp = vertex.getValue().getDisp();
 				CoordinatesWritable delta = ownPos.subtract(otherPos);
-				calculateAttractiveForceByDistance(vertex, ownPos, disp, delta);
-
+				
+				CoordinatesWritable dispChange = calculateAttractiveForce(delta);
+				disp = disp.subtract(dispChange);
+				// set new disp
+				vertex.setValue(new VertexValueWritable(ownPos, disp));
+				
+				
 				// only send delta to reply
 				sendMessage(messageWritable.getSrcId(), new MessageWritable(
 						vertex.getId(), delta));
 			}
 
-			// move position
-			moveVertex(vertex);
+
 
 		} else if (getSuperstep() % 4 == 3) {
 			// anyone who received a reply: calculate disp ,then move ,then set
@@ -86,13 +95,16 @@ public class FruchtermanReingoldGraphVis
 				CoordinatesWritable ownPos = vertex.getValue().getPos();
 				CoordinatesWritable disp = vertex.getValue().getDisp();
 				CoordinatesWritable delta = messageWritable.getPos();
-				calculateAttractiveForceByDistance(vertex, ownPos, disp, delta);
+				
+				CoordinatesWritable dispChange = calculateAttractiveForce(delta);
+				disp = disp.add(dispChange);
+				// set new disp
+				vertex.setValue(new VertexValueWritable(ownPos, disp));
 
 
 			}
 
-			// move position
-			moveVertex(vertex);
+
 
 			// Cool!
 			if (vertex.getId().get() == 1) {
@@ -104,6 +116,22 @@ public class FruchtermanReingoldGraphVis
 		}
 
 		vertex.voteToHalt();
+	}
+
+	private CoordinatesWritable calculateAttractiveForce(
+			CoordinatesWritable delta) {
+		double deltaLength = delta.length();
+
+		// if in the same place, give it a relatively small distance
+		if (deltaLength == 0) {
+			deltaLength = MIN_DIST;
+		}
+
+		double faResult = fa(deltaLength);
+		// calculate the new displacement
+		CoordinatesWritable dispChange = new CoordinatesWritable(delta.getX()
+				* faResult / deltaLength, delta.getY() * faResult / deltaLength);
+		return dispChange;
 	}
 
 	/**
@@ -120,25 +148,27 @@ public class FruchtermanReingoldGraphVis
 			dispLength = 1;// any number should work, as disp is 0
 		}
 
-		/*// calculate change value, limit it to t
+		// calculate change value, limit it to t
 		CoordinatesWritable change = disp.min(T).multiply(
 				new CoordinatesWritable(disp.getX() / dispLength, disp.getY()
-						/ dispLength));*/
+						/ dispLength));
 		
 		
 		//gravity
-		CoordinatesWritable change =disp;//added
-		/*double gravity=10;
-		//dispLength: double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
-		double gf = 0.01d * k * (float) gravity * dispLength;
-		change=new CoordinatesWritable( change.getX()-(gf * pos.getX() / dispLength),change.getY()-(gf * pos.getY() / dispLength));
+		//CoordinatesWritable change =disp;//added
+		double gravity=10;
+		double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
+		double gf = 0.01d * k * (double) gravity * d;
+		change=new CoordinatesWritable( change.getX()-(gf * pos.getX() / d),change.getY()-(gf * pos.getY() / d));
+		
+		
 		//to a small number
-		change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);*/
+		change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);
 		
 		
 		
 		// limit
-		double limitedDist = Math.min(Math.sqrt(AREA/10) * ((double) 1 / LIMIT), dispLength);
+		double limitedDist = Math.min((Math.sqrt(AREA)/10) * ((double) 1 / LIMIT), dispLength);
 		change = new CoordinatesWritable(change.getX() / dispLength
 				* limitedDist, change.getY() / dispLength * limitedDist);
 
@@ -147,32 +177,6 @@ public class FruchtermanReingoldGraphVis
 		vertex.setValue(new VertexValueWritable(pos, new CoordinatesWritable()));// clear
 																					// the
 																					// disp
-	}
-
-	/**
-	 * @param vertex
-	 * @param ownPos
-	 * @param disp
-	 * @param delta
-	 */
-	private void calculateAttractiveForceByDistance(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
-			CoordinatesWritable ownPos, CoordinatesWritable disp,
-			CoordinatesWritable delta) {
-		double deltaLength = delta.length();
-
-		// if in the same place, give it a relatively small distance
-		if (deltaLength == 0) {
-			deltaLength = MIN_DIST;
-		}
-
-		double faResult = fa(deltaLength);
-		// calculate the new displacement
-		CoordinatesWritable dispChange = new CoordinatesWritable(delta.getX()
-				* faResult / deltaLength, delta.getY() * faResult / deltaLength);
-		disp = disp.subtract(dispChange);
-		// set new disp
-		vertex.setValue(new VertexValueWritable(ownPos, disp));
 	}
 
 	/**
@@ -194,11 +198,12 @@ public class FruchtermanReingoldGraphVis
 	private void calculateRepulsiveForces(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
 			Iterable<MessageWritable> messages) {
+		
 		for (MessageWritable messageWritable : messages) {
 
 			CoordinatesWritable ownPos = vertex.getValue().getPos();
 			CoordinatesWritable otherPos = messageWritable.getPos();
-			CoordinatesWritable disp = new CoordinatesWritable();// v.disp:=0
+			CoordinatesWritable disp = vertex.getValue().getDisp();
 			CoordinatesWritable delta = ownPos.subtract(otherPos);
 			double deltaLength = delta.length();
 
@@ -284,14 +289,8 @@ public class FruchtermanReingoldGraphVis
 			WorkerContext workerContext) {
 		super.initialize(graphState, workerClientRequestProcessor,
 				graphTaskManager, workerAggregatorUsage, workerContext);
-		k = Math.sqrt(AREA / getTotalNumVertices());
-		// generate constants by number of vertices
-		/*W = 1000;
-		AREA = W * W;
-		T = 100;
+		k = Math.sqrt(AREA / (double)getTotalNumVertices());
 		
-		SPEED = 1;
-		LIMIT =  300;*/
 	}
 
 	private void cool() {
@@ -301,7 +300,7 @@ public class FruchtermanReingoldGraphVis
 
 	private double fa(double x) {
 		//2000000000.0d *
-		return  x * x / k;
+		return x * x / k;
 	}
 
 	private double fr(double x) {
