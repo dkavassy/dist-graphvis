@@ -36,6 +36,12 @@ public class FruchtermanReingoldGraphVis
 			if (getSuperstep() == 0) {
 				generateRandomLayout(vertex);
 			}
+			else {
+				// Cool!
+				if (vertex.getId().get() == 1) {
+					cool();
+				}
+			}
 			
 			// set target position to edge values, only in the final iteration
 			if (T <= 0) {
@@ -105,10 +111,7 @@ public class FruchtermanReingoldGraphVis
 
 
 
-			// Cool!
-			if (vertex.getId().get() == 1) {
-				cool();
-			}
+			
 
 			// send its position to wake up everyone
 			sendOwnPositionToEveryVertex(vertex);
@@ -247,6 +250,7 @@ public class FruchtermanReingoldGraphVis
 	private void setEdgeValuesForOutPut(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
 			Iterable<MessageWritable> messages) {
+		
 		for (MessageWritable messageWritable : messages) {
 			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
 				if (edge.getTargetVertexId().compareTo(
@@ -267,6 +271,7 @@ public class FruchtermanReingoldGraphVis
 	 */
 	private void generateRandomLayout(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
+		
 		Random random = new Random();
 		CoordinatesWritable pos = new CoordinatesWritable(
 				(double) ((random.nextDouble() - 0.5) * 1000),
