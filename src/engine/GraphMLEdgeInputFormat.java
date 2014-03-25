@@ -12,19 +12,18 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
-public class GMLEdgeInputFormat extends
-		TextEdgeInputFormat<IntWritable, EdgeValueWritable> {
+public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueWritable> {
 
 	@Override
 	public EdgeReader<IntWritable, EdgeValueWritable> createEdgeReader(
 			InputSplit arg0, TaskAttemptContext arg1) throws IOException {
-		// TODO Auto-generated method stub
-		return new GMLEdgeReader();
+		
+		return new GraphMLEdgeReader();
 	}
 
-	public class GMLEdgeReader extends
-			TextEdgeReaderFromEachLineProcessed<IntPair> {
-		
+	
+	public class GraphMLEdgeReader extends
+	TextEdgeReaderFromEachLineProcessed<IntPair> {
 		private final Pattern separator = Pattern.compile("[\\s]");
 		
 		@Override
@@ -40,19 +39,25 @@ public class GMLEdgeInputFormat extends
 		}
 
 		@Override
-		protected EdgeValueWritable getValue(IntPair arg0) throws IOException {
+		protected EdgeValueWritable getValue(IntPair endpoints) throws IOException {
 			return new EdgeValueWritable(new LongWritable(0L), new CoordinatesWritable());
 		}
 
 		@Override
 		protected IntPair preprocessLine(Text text) throws IOException {
-
-			String line = text.toString().split("[\\[\\]]")[1].trim();
+			String line = text.toString().split("[<>]")[1];
 			String[] tokens = separator.split(line);
-			return new IntPair(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[3]));
-
+			return new IntPair(Integer.parseInt(tokens[2].split("[\"]")[1]),
+					Integer.parseInt(tokens[3].split("[\"]")[1]));
 		}
-
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 
 }
