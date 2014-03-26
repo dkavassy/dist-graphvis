@@ -66,4 +66,16 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	public CoordinatesWritable min(double t) {
 		return new CoordinatesWritable(Math.min(getX(), t),Math.min(getY(), t));
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		CoordinatesWritable other = (CoordinatesWritable) obj;
+		if(other.getX()==x && other.getY()== y){
+			return true;
+		}
+		
+		return false;
+	}
+	
+	
 }

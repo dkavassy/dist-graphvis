@@ -49,4 +49,19 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 		this.pos  = pos;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		MessageWritable other = (MessageWritable)  obj;
+		if(other.getSrcId().equals(srcId)){
+			if(other.getPos().equals(pos)){
+				return true;
+			}
+		}
+		
+		
+		
+		return false;
+		
+	}
+
 }

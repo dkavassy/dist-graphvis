@@ -42,7 +42,7 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test the behavior when a shorter path to a vertex has been found
 	 */
 	@Test
-	public void testSuperstep1SendMessagesToNeighbors() throws Exception {
+	public void testSuperstep1() throws Exception {
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		messages.add(new MessageWritable(new IntWritable(2),new CoordinatesWritable(545,234)));
@@ -65,7 +65,7 @@ public class FruchtermanReingoldGraphVisTest {
 		computation.compute(vertex, messages);
 
 		assertTrue(vertex.isHalted());
-		
+		//assertEquals();
 		env.verifyMessageSent(new IntWritable(2), new MessageWritable(new IntWritable(1),vertex.getValue().getPos()));
 		env.verifyMessageSent(new IntWritable(3), new MessageWritable(new IntWritable(1),vertex.getValue().getPos()));
 	}
@@ -73,7 +73,7 @@ public class FruchtermanReingoldGraphVisTest {
 	/**
 	 * A local integration test on toy data
 	 */
-	@Test
+	/*@Test
 	public void testToyData() throws Exception {
 
 		// A small graph
@@ -89,6 +89,6 @@ public class FruchtermanReingoldGraphVisTest {
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		System.out.println(results);
 
-	}
+	}*/
 
 }
