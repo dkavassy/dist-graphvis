@@ -1,18 +1,65 @@
+/*
+ * @(\#) SomeClass.java 1.1 10 February 14
+
+ *
+ * Copyright (\copyright) 2014 University of York & British Telecommunications plc
+ * This Software is granted under the MIT License (MIT)
+
+ *
+
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+
+ * of this software and associated documentation files (the "Software"), to deal
+
+ * in the Software without restriction, including without limitation the rights
+
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+
+ * copies of the Software, and to permit persons to whom the Software is
+
+ * furnished to do so, subject to the following conditions:
+
+ *
+
+ * The above copyright notice and this permission notice shall be included in
+
+ * all copies or substantial portions of the Software.
+
+ *
+
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+
+ * THE SOFTWARE.
+ *
+ */
 package engine;
 import java.io.IOException;
 import java.util.Random;
 
-import org.apache.giraph.comm.WorkerClientRequestProcessor;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
-import org.apache.giraph.graph.GraphState;
-import org.apache.giraph.graph.GraphTaskManager;
 import org.apache.giraph.graph.Vertex;
-import org.apache.giraph.worker.WorkerAggregatorUsage;
-import org.apache.giraph.worker.WorkerContext;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 
+/** 
+ * A class that represents coordinates of a vector. 
+ * This class contain x and y coordinates. 
+ * <p> 
+ * @author Shan Huang 
+ * @author Daniel Kavassy 
+ * @version 1.1 Initial development. 
+ */ 
 public class FruchtermanReingoldGraphVis
 		extends
 		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
@@ -22,7 +69,7 @@ public class FruchtermanReingoldGraphVis
 	private static final double W = 100.0, L = 100.0;
 	private static final double AREA = W*L;
 	
-	private static final double MIN_DIST = 0.1;
+	private static final double MIN_DIST = 0.000001;
 	
 	private static final double SPEED = 1.0;
 	
@@ -30,7 +77,7 @@ public class FruchtermanReingoldGraphVis
 	
 	private static final double k = Math.sqrt(AREA / 4); // Assuming numVertices == 4
 	
-	private static double t = W/10.0;
+	private static double T = W/10.0;
 
 	@Override
 	public void compute(
@@ -63,7 +110,7 @@ public class FruchtermanReingoldGraphVis
 			}
 			
 			// If we're not frozen yet, wake everyone up and send own position to everyone for next SS
-			if (t > 0) {
+			if (T > 0) {
 				sendOwnPositionToEveryVertex(vertex);
 			}
 		}
@@ -291,7 +338,7 @@ public class FruchtermanReingoldGraphVis
 		}
 
 		// calculate change value, limit it to t
-		CoordinatesWritable change = disp.min(t).multiply(
+		CoordinatesWritable change = disp.min(T).multiply(
 				new CoordinatesWritable(disp.getX() / dispLength, disp.getY()
 						/ dispLength));
 		
@@ -342,7 +389,7 @@ public class FruchtermanReingoldGraphVis
 
 	// Linear cooling function
 	private void cool() {
-		t = t - SPEED;
+		T = T - SPEED;
 	}
 
 	// Attractive force
@@ -356,5 +403,14 @@ public class FruchtermanReingoldGraphVis
 
 		return  k*k / z;
 	}
+	
+	public static double getT() {
+		return T;
+	}
+	
+	public static double getK() {
+		return k;
+	}
 
+	
 }

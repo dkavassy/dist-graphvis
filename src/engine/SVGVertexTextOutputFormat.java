@@ -1,4 +1,30 @@
+/*
+ * @(\#) SomeClass.java 1.1 10 February 14
+ *
+ * Copyright (\copyright) 2014 University of York & British Telecommunications plc
+ * This Software is granted under the MIT License (MIT)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ *
+ */
 package engine;
+
 import java.io.IOException;
 
 import org.apache.giraph.edge.Edge;
@@ -9,14 +35,11 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /**
-* Write out Vertices' IDs and values, but not their edges nor edges' values.
-* This is a useful output format when the final value of the vertex is
-* all that's needed. The boolean configuration parameter reverse.id.and.value
-* allows reversing the output of id and value.
-*
-* @param <I> Vertex index value
-* @param <V> Vertex value
-* @param <E> Edge value
+* A class that write vertices and edges to an SVG file.
+* <p>
+* 
+* @author James Pierce
+* @version 1.1 Initial development.
 */
 public class SVGVertexTextOutputFormat<I extends IntWritable, V extends VertexValueWritable, E extends EdgeValueWritable>
 	extends TextVertexOutputFormat<I, V, E> 
@@ -35,9 +58,6 @@ public class SVGVertexTextOutputFormat<I extends IntWritable, V extends VertexVa
     return new SVGVertexWriter();
   }
 
-  /**
-* Vertex writer used with {@link IdWithValueTextOutputFormat}.
-*/
   protected class SVGVertexWriter extends TextVertexWriterToEachLine 
   {
     /** Saved delimiter */
