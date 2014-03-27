@@ -311,5 +311,14 @@ public class FruchtermanReingoldGraphVis
 
 		return  k * k / x;
 	}
+	
+	public static double getT() {
+		return T;
+	}
+	
+	public static double getK() {
+		return k;
+	}
 
+	
 }
