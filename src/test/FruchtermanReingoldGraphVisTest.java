@@ -72,11 +72,6 @@ public class FruchtermanReingoldGraphVisTest {
 		
 	}
 	
-	
-	
-	
-	
-	
 	/**
 	 * Test the messages after finishes superstep1
 	 */
