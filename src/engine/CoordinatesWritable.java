@@ -6,14 +6,15 @@ import java.io.IOException;
 
 public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	
-	private double x = 0;
-	private double y = 0;
+	private double x = 0.0;
+	private double y = 0.0;
 	
 	public CoordinatesWritable() {
-		
+		super();
 	}
 	
 	public CoordinatesWritable(double x, double y) {
+		super();
 		set(x, y);
 	}
 
@@ -58,12 +59,21 @@ public class CoordinatesWritable implements org.apache.hadoop.io.Writable {
 	public CoordinatesWritable subtract(CoordinatesWritable other) {
 		return new CoordinatesWritable(getX() - other.getX(), getY() - other.getY());
 	}
-	//fake multiply
+	
+	public CoordinatesWritable multiply(double scalar) {
+		return new CoordinatesWritable(getX() * scalar, getY() * scalar);
+	}
+	
+	// fake multiply
 	public CoordinatesWritable multiply(CoordinatesWritable other) {
 		return new CoordinatesWritable(getX() * other.getX(), getY() * other.getY());
 	}
+	
+	public CoordinatesWritable divide(double scalar) {
+		return new CoordinatesWritable(getX() / scalar, getY() / scalar);
+	}
 	 
 	public CoordinatesWritable min(double t) {
-		return new CoordinatesWritable(Math.min(getX(), t),Math.min(getY(), t));
+		return new CoordinatesWritable(Math.min(getX(), t), Math.min(getY(), t));
 	}
 }

@@ -10,10 +10,11 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	private CoordinatesWritable disp = new CoordinatesWritable();
 	
 	public VertexValueWritable() {
-		
+		super();
 	}
 	
 	public VertexValueWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
+		super();
 		set(pos, disp);
 	}
 

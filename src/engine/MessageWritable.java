@@ -12,10 +12,11 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	private CoordinatesWritable pos = new CoordinatesWritable();
 	
 	public MessageWritable() {
-		
+		super();
 	}
 	
 	public MessageWritable(IntWritable srcId, CoordinatesWritable pos) {
+		super();
 		set(srcId, pos);
 	}
 

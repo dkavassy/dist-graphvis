@@ -17,130 +17,270 @@ public class FruchtermanReingoldGraphVis
 		extends
 		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
 
-	private static double AREA=10000*10000;
-
-	private static double T=1000;
-	private static double SPEED=200;
-	private static double LIMIT=800;// changed
-	private static double k;
-	private static final double MIN_DIST = 0.0000001;
+	private static final int SUPERSTEPS = 6;
+	
+	private static final double W = 100.0, L = 100.0;
+	private static final double AREA = W*L;
+	
+	private static final double MIN_DIST = 0.1;
+	
+	private static final double SPEED = 1.0;
+	
+	private static final double LIMIT = W/10.0;
+	
+	private static final double k = Math.sqrt(AREA / 4); // Assuming numVertices == 4
+	
+	private static double t = W/10.0;
 
 	@Override
 	public void compute(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
 			Iterable<MessageWritable> messages) throws IOException {
 
-		// super step
-		if (getSuperstep() % 4 == 0) {
-			// Generate random position, only at the beginning!
+		// Super Step 1
+		if (getSuperstep() % SUPERSTEPS == 0) {
+			// Everybody is awake
+			
+			// Very first superstep: init in random position
 			if (getSuperstep() == 0) {
-				generateRandomLayout(vertex);
+				
+				Random random = new Random();
+				CoordinatesWritable pos = new CoordinatesWritable(
+						vertex.getId().get() * 10, //(random.nextDouble() - 0.5) * 100.0,
+						vertex.getId().get() * 5   //(random.nextDouble() - 0.5) * 100.0
+						);
+				
+				CoordinatesWritable disp        = new CoordinatesWritable(0.0,0.0);
+				VertexValueWritable vertexValue = new VertexValueWritable(pos, disp);
+
+				vertex.setValue(vertexValue);
 			}
 			else {
-				// Cool!
+				// If it's not the very first superstep, let's chill!
 				if (vertex.getId().get() == 1) {
 					cool();
 				}
 			}
 			
-			// set target position to edge values, only in the final iteration
-			if (T <= 0) {
-				setEdgeValuesForOutPut(vertex, messages);
-
+			// If we're not frozen yet, wake everyone up and send own position to everyone for next SS
+			if (t > 0) {
+				sendOwnPositionToEveryVertex(vertex);
 			}
-
-			// send messages
-			sendOwnPositionToEveryVertex(vertex);
+		}
+		else if (getSuperstep() % SUPERSTEPS == 1) {
+			// Everybody is awake
 			
-
-		} else if (getSuperstep() % 4 == 1) {
-			
-			
-			//move position
-			moveVertex(vertex);
-			if(T > 0){
 			// calculate repulsive forces between everyone except self
-			calculateRepulsiveForces(vertex, messages);
+			applyRepulsiveForces(vertex, messages);
 
-			// send new pos message to neighbors
-			sendOwnPositionToNeighbors(vertex);
+			// Send position to neighbors
+			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
+				
+				sendMessage(edge.getTargetVertexId(),
+						new MessageWritable(vertex.getId(), vertex.getValue().getPos()));
 			}
 
-		} else if (getSuperstep() % 4 == 2) {
-			// anyone who received a message, calculate displacement, then
-			// reply, then move
-			// don't need to check anything as the length of empty messages is
-			// 0, and not null
-			for (MessageWritable messageWritable : messages) {
-				// attractive forces
-				CoordinatesWritable ownPos = vertex.getValue().getPos();
-				CoordinatesWritable otherPos = messageWritable.getPos();
-				CoordinatesWritable disp = vertex.getValue().getDisp();
-				CoordinatesWritable delta = ownPos.subtract(otherPos);
-				
-				CoordinatesWritable dispChange = calculateAttractiveForce(delta);
-				disp = disp.subtract(dispChange);
-				// set new disp
-				vertex.setValue(new VertexValueWritable(ownPos, disp));
-				
-				
-				// only send delta to reply
-				sendMessage(messageWritable.getSrcId(), new MessageWritable(
-						vertex.getId(), delta));
-			}
-
-
-
-		} else if (getSuperstep() % 4 == 3) {
-			// anyone who received a reply: calculate disp ,then move ,then set
-			// edge value to neighbour's pos, then cool
-
-			for (MessageWritable messageWritable : messages) {
-				// calculate attractive forces
-				CoordinatesWritable ownPos = vertex.getValue().getPos();
-				CoordinatesWritable disp = vertex.getValue().getDisp();
-				CoordinatesWritable delta = messageWritable.getPos();
-				
-				CoordinatesWritable dispChange = calculateAttractiveForce(delta);
-				disp = disp.add(dispChange);
-				// set new disp
-				vertex.setValue(new VertexValueWritable(ownPos, disp));
-
-
-			}
-
-
-
+		}
+		else if (getSuperstep() % SUPERSTEPS == 2) {
+			// Vertexes with in-edges are awake
 			
+			// anyone who received a message, calculate displacement, then
+			// reply and wait, because in the next step they might get more messages
+			// from vertices which are connected by out-edges
+			
+			// param3 true: send a message back with position
+			applyAttractiveForces(vertex, messages, true);
+			
+			// if there are no out-edges, move, otherwise wait until next step and move then
+			if (vertex.getNumEdges() == 0) {
+				moveVertex(vertex);
+			}
+		}
+		else if (getSuperstep() % SUPERSTEPS == 3) {
+			// Vertices with out-edges are awake
 
-			// send its position to wake up everyone
+			// param3 true: no need to send another message back
+			applyAttractiveForces(vertex, messages, false);
+			
+			// move, those who don't have out-edges have already moved
+			moveVertex(vertex);
+
+			// Wake up vertices with in-edges
+			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
+				
+				sendMessage(edge.getTargetVertexId(),
+						new MessageWritable(vertex.getId(), new CoordinatesWritable()));
+			}
+		}
+		else if (getSuperstep() % SUPERSTEPS == 4) {
+			// Vertices with in-edges are awake
+			
+			CoordinatesWritable ownPos = vertex.getValue().getPos();
+			IntWritable         ownId  = vertex.getId();
+			
+			// Send updated position back to everyone from whom a msg was rcvd
+			for (MessageWritable messageWritable : messages) {
+				sendMessage(messageWritable.getSrcId(),
+						new MessageWritable(ownId, ownPos));
+			}
+		}
+		else if (getSuperstep() % SUPERSTEPS == 5) {
+			// Vertices with out-edges are awake
+			
+			// Set neighbor's position in edge value
+			for (MessageWritable messageWritable : messages) {
+				
+				IntWritable srcId = messageWritable.getSrcId();
+				
+				for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
+					
+					if (edge.getTargetVertexId().equals(srcId)) {
+						
+						// Keep weight
+						LongWritable weight = edge.getValue().getWeight();
+						
+						vertex.setEdgeValue(
+								edge.getTargetVertexId(),
+								new EdgeValueWritable(weight, messageWritable.getPos()));
+					}
+				}
+			}
+			
+			// Wake everyone up for the next superstep
 			sendOwnPositionToEveryVertex(vertex);
 		}
 
 		vertex.voteToHalt();
 	}
+	
+	/**
+	 * @param vertex
+	 * @param messages
+	 */
+	private void applyRepulsiveForces(
+			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
+			Iterable<MessageWritable> messages) {
+		
+		VertexValueWritable vertexValue = vertex.getValue();
+		CoordinatesWritable ownPos      = vertexValue.getPos();
+		// We start with zero displacement
+		CoordinatesWritable disp        = new CoordinatesWritable(0.0,0.0);
+		
+		for (MessageWritable messageWritable : messages) {
+			
+			CoordinatesWritable otherPos = messageWritable.getPos();
+			
+			CoordinatesWritable delta    = ownPos.subtract(otherPos);
+			double deltaLength           = delta.length();
 
-	private CoordinatesWritable calculateAttractiveForce(
-			CoordinatesWritable delta) {
-		double deltaLength = delta.length();
+			// if in the same place, give it a relatively small distance
+			if (deltaLength < MIN_DIST) { // avoid comparing doubles for equality!
+				deltaLength = MIN_DIST;
+			}
 
-		// if in the same place, give it a relatively small distance
-		if (deltaLength == 0) {
-			deltaLength = MIN_DIST;
+			// calculate the new displacement
+			CoordinatesWritable dispChange = delta.divide(deltaLength).multiply(fr(deltaLength));
+			
+			// Update displacement
+			disp = disp.add(dispChange);
 		}
+		
+		// set new disp
+		vertex.setValue(new VertexValueWritable(ownPos, disp));
+	}
 
-		double faResult = fa(deltaLength);
-		// calculate the new displacement
-		CoordinatesWritable dispChange = new CoordinatesWritable(delta.getX()
-				* faResult / deltaLength, delta.getY() * faResult / deltaLength);
-		return dispChange;
+	private void applyAttractiveForces(
+			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
+			Iterable<MessageWritable> messages,
+			boolean sendMessageBack) {
+		
+		VertexValueWritable vertexValue = vertex.getValue();
+		CoordinatesWritable ownPos      = vertexValue.getPos();
+		CoordinatesWritable disp        = vertexValue.getDisp();
+		IntWritable         ownId       = vertex.getId();
+		
+		// don't need to check anything as the length of empty messages is
+		// 0, and not null
+		for (MessageWritable messageWritable : messages) {
+			
+			// attractive forces
+			CoordinatesWritable otherPos = messageWritable.getPos();
+			
+			CoordinatesWritable delta = ownPos.subtract(otherPos);
+			
+			double deltaLength = delta.length();
+
+			// if in the same place, give it a relatively small distance
+			if (deltaLength < MIN_DIST) {
+				deltaLength = MIN_DIST;
+			}
+			
+			// calculate the new displacement
+			CoordinatesWritable dispChange = delta.divide(deltaLength).multiply(fa(deltaLength));
+			
+			// Equivalent to subtraction for in-edge, addition for out-edge as per original paper
+			disp = disp.subtract(dispChange);
+			
+			// set new disp
+			vertex.setValue(new VertexValueWritable(ownPos, disp));
+			
+			// // Send a message back on in-edge (only in first iteration)
+			if (sendMessageBack) {
+				sendMessage(messageWritable.getSrcId(),
+						new MessageWritable(ownId, ownPos));
+			}
+		}
+		
+		vertex.setValue(new VertexValueWritable(ownPos, disp));
+	}
+	
+	private void moveVertex(Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
+		
+		VertexValueWritable vertexValue = vertex.getValue();
+		CoordinatesWritable pos         = vertexValue.getPos();
+		CoordinatesWritable disp        = vertexValue.getDisp();
+		
+		double dispLength = disp.length();
+		
+		if (dispLength < MIN_DIST) {
+			dispLength = 1.0; // Anything is fine here as long as it's not 0
+		}
+		
+		// Limit displacement with temperature
+		CoordinatesWritable actualDisplacement = new CoordinatesWritable(1, 5);
+			//	.divide(dispLength) // normalized vector
+			//	.multiply( disp.min(t) );
+		
+		// Add displacement
+		CoordinatesWritable newPos = pos.add(actualDisplacement);
+		
+		//double x = newPos.getX(), y = newPos.getY();
+		/*// Limit position with frame
+		if (x > W/2) {
+			x = W/2;
+		}
+		else if (x < -W/2) {
+			x = -W/2;
+		}
+		
+		if (y > L/2) {
+			y = L/2;
+		}
+		else if (y < -L/2) {
+			y = -L/2;
+		}*/
+		
+		// Set new position and reset disp
+		//newPos = new CoordinatesWritable(x, y);
+		vertex.setValue(new VertexValueWritable(newPos, new CoordinatesWritable(0.0,0.0)));
 	}
 
 	/**
 	 * @param vertex
 	 */
-	private void moveVertex(
+	private void move(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
+		
 		CoordinatesWritable pos = vertex.getValue().getPos();
 		CoordinatesWritable disp = vertex.getValue().getDisp();
 		double dispLength = disp.length();
@@ -151,7 +291,7 @@ public class FruchtermanReingoldGraphVis
 		}
 
 		// calculate change value, limit it to t
-		CoordinatesWritable change = disp.min(T).multiply(
+		CoordinatesWritable change = disp.min(t).multiply(
 				new CoordinatesWritable(disp.getX() / dispLength, disp.getY()
 						/ dispLength));
 		
@@ -170,7 +310,7 @@ public class FruchtermanReingoldGraphVis
 		
 		
 		// limit
-		double limitedDist = Math.min((Math.sqrt(AREA)/10) * ((double) 1 / LIMIT), dispLength);
+		double limitedDist = Math.min((Math.sqrt(AREA)/10) * (1.0 / LIMIT), dispLength);
 		change = new CoordinatesWritable(change.getX() / dispLength
 				* limitedDist, change.getY() / dispLength * limitedDist);
 
@@ -184,52 +324,9 @@ public class FruchtermanReingoldGraphVis
 	/**
 	 * @param vertex
 	 */
-	private void sendOwnPositionToNeighbors(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
-		for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
-			sendMessage(edge.getTargetVertexId(),
-					new MessageWritable(vertex.getId(), vertex.getValue()
-							.getPos()));
-		}
-	}
-
-	/**
-	 * @param vertex
-	 * @param messages
-	 */
-	private void calculateRepulsiveForces(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
-			Iterable<MessageWritable> messages) {
-		
-		for (MessageWritable messageWritable : messages) {
-
-			CoordinatesWritable ownPos = vertex.getValue().getPos();
-			CoordinatesWritable otherPos = messageWritable.getPos();
-			CoordinatesWritable disp = vertex.getValue().getDisp();
-			CoordinatesWritable delta = ownPos.subtract(otherPos);
-			double deltaLength = delta.length();
-
-			// if in the same place, give it a relatively small distance
-			if (deltaLength == 0) {
-				deltaLength = MIN_DIST;
-			}
-
-			double frResult = fr(deltaLength);
-			// calculate the new displacement
-			CoordinatesWritable dispChange = new CoordinatesWritable(
-					delta.getX() * frResult / deltaLength, delta.getY()
-							* frResult / deltaLength);
-			disp = disp.add(dispChange);
-			// set new disp
-			vertex.setValue(new VertexValueWritable(ownPos, disp));
-		}
-	}
-
-	/**
-	 * @param vertex
-	 */
 	private void sendOwnPositionToEveryVertex(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
+		
 		int myId = vertex.getId().get();
 		// We assume that vertices are numbered 1..n where n is the number
 		// of vertices
@@ -237,79 +334,27 @@ public class FruchtermanReingoldGraphVis
 			// Send position messages to everyone except self
 			if (i != myId) {
 				sendMessage(new IntWritable(i),
-						new MessageWritable(vertex.getId(), vertex.getValue()
-								.getPos()));
+						new MessageWritable(vertex.getId(),
+								vertex.getValue().getPos()));
 			}
 		}
 	}
 
-	/**
-	 * @param vertex
-	 * @param messages
-	 */
-	private void setEdgeValuesForOutPut(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
-			Iterable<MessageWritable> messages) {
-		
-		for (MessageWritable messageWritable : messages) {
-			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
-				if (edge.getTargetVertexId().compareTo(
-						messageWritable.getSrcId()) == 0) {
-					// keep original edge value
-					LongWritable edgeValue = edge.getValue().getEdgeValue();
-					vertex.setEdgeValue(
-							edge.getTargetVertexId(),
-							new EdgeValueWritable(edgeValue, messageWritable
-									.getPos()));
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param vertex
-	 */
-	private void generateRandomLayout(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
-		
-		Random random = new Random();
-		CoordinatesWritable pos = new CoordinatesWritable(
-				(double) ((random.nextDouble() - 0.5) * 1000),
-				(double) ((random.nextDouble() - 0.5) * 1000)
-				);
-		CoordinatesWritable disp = new CoordinatesWritable();
-
-		VertexValueWritable coords = new VertexValueWritable(pos, disp);
-
-		vertex.setValue(coords);
-	}
-
-	@Override
-	public void initialize(
-			GraphState graphState,
-			WorkerClientRequestProcessor<IntWritable, VertexValueWritable, EdgeValueWritable> workerClientRequestProcessor,
-			GraphTaskManager<IntWritable, VertexValueWritable, EdgeValueWritable> graphTaskManager,
-			WorkerAggregatorUsage workerAggregatorUsage,
-			WorkerContext workerContext) {
-		super.initialize(graphState, workerClientRequestProcessor,
-				graphTaskManager, workerAggregatorUsage, workerContext);
-		k = Math.sqrt(AREA / (double)getTotalNumVertices());
-		
-	}
-
+	// Linear cooling function
 	private void cool() {
-
-		T = T - SPEED;
+		t = t - SPEED;
 	}
 
+	// Attractive force
 	private double fa(double x) {
-		//2000000000.0d *
-		return x * x / k;
+		
+		return x*x / k;
 	}
 
-	private double fr(double x) {
+	// Repulsive force
+	private double fr(double z) {
 
-		return  k * k / x;
+		return  k*k / z;
 	}
 
 }

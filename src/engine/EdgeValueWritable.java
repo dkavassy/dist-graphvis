@@ -8,36 +8,37 @@ import org.apache.hadoop.io.LongWritable;
 
 public class EdgeValueWritable implements org.apache.hadoop.io.Writable {
 	
-	private LongWritable edgeValue = new LongWritable();
+	private LongWritable           weight = new LongWritable();
 	private CoordinatesWritable targetPos = new CoordinatesWritable();
 	
 	public EdgeValueWritable() {
-		
+		super();
 	}
 	
 	public EdgeValueWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
+		super();
 		set(edgeValue, targetValue);
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		edgeValue.readFields(in);
+		weight.readFields(in);
 		targetPos.readFields(in);
 	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		edgeValue.write(out);
+		weight.write(out);
 		targetPos.write(out);
 	}
 	
 	@Override
 	public String toString() {
-		return "edge val: " + edgeValue + "; target pos: " + targetPos;
+		return "edge weight: " + weight + "; target pos: " + targetPos;
 	}
 	
-	public LongWritable getEdgeValue() {
-		return edgeValue;
+	public LongWritable getWeight() {
+		return weight;
 	}
 
 	public CoordinatesWritable getTargetPos() {
@@ -45,7 +46,7 @@ public class EdgeValueWritable implements org.apache.hadoop.io.Writable {
 	}
 
 	public void set(LongWritable edgeValue, CoordinatesWritable targetPos) {
-		this.edgeValue  = edgeValue;
+		this.weight  = edgeValue;
 		this.targetPos  = targetPos;
 	}
 
