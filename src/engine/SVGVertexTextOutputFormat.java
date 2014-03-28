@@ -50,7 +50,7 @@ public class SVGVertexTextOutputFormat<I extends IntWritable, V extends VertexVa
   /** Default output delimiter */
   public static final String LINE_TOKENIZE_VALUE_DEFAULT = "\t";
   
-  public static final double W = 100.0, L = 100.0;
+  public static final double W = 2000.0, L = 2000.0;
 
   @Override
   public TextVertexWriter createVertexWriter(TaskAttemptContext context) 
@@ -74,8 +74,8 @@ public class SVGVertexTextOutputFormat<I extends IntWritable, V extends VertexVa
     @Override
     protected Text convertVertexToLine(Vertex<I, V, E> vertex) throws IOException 
     {
-    	long x = (long) (vertex.getValue().getPos().getX()+W/2);
-    	long y = (long) (vertex.getValue().getPos().getY()+L/2);
+    	long x = (long) (vertex.getValue().getPos().getX() + W/2);
+    	long y = (long) (vertex.getValue().getPos().getY() + L/2);
     	
     	StringBuilder str = new StringBuilder();
     	
@@ -84,8 +84,8 @@ public class SVGVertexTextOutputFormat<I extends IntWritable, V extends VertexVa
     	// Create input svg style.
     	for (Edge<I, E> edge : vertex.getEdges()) {
     		
-    		long x2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getX()+W/2);
-    		long y2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getY()+L/2);
+    		long x2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getX() + W/2);
+    		long y2 = (long) (((EdgeValueWritable)edge.getValue()).getTargetPos().getY() + L/2);
     		str.append("<line x1=\"" + x + "\" y1=\"" + y
     				+ "\" x2=\"" + x2
     				+ "\" y2=\"" + y2
