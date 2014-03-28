@@ -1,5 +1,5 @@
 /*
- * @(\#) SomeClass.java 1.1 10 February 14
+ * @(\#) FruchtermanReingoldGraphVis.java 1.1 10 March 20
  *
  * Copyright (\copyright) 2014 University of York & British Telecommunications plc
  * This Software is granted under the MIT License (MIT)
