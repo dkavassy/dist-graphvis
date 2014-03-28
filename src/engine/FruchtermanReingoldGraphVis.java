@@ -227,8 +227,9 @@ public class FruchtermanReingoldGraphVis
 		else if (getSuperstep() % SUPERSTEPS == 2) {
 			// Vertices with in-edges are awake
 			
-			CoordinatesWritable ownPos = vertex.getValue().getPos();
-			IntWritable         ownId  = vertex.getId();
+			CoordinatesWritable ownPos = new CoordinatesWritable(vertex.getValue().getPos().getX(),
+					vertex.getValue().getPos().getY());
+			IntWritable         ownId  = new IntWritable(vertex.getId().get());
 			
 			// Send new position back to everyone from whom a msg was rcvd
 			for (MessageWritable messageWritable : messages) {
@@ -243,20 +244,22 @@ public class FruchtermanReingoldGraphVis
 			// Set neighbor's position in edge value
 			for (MessageWritable messageWritable : messages) {
 				
-				int srcId = messageWritable.getSrcId().get();
+				int               srcId = messageWritable.getSrcId().get();
+				CoordinatesWritable pos = new CoordinatesWritable(messageWritable.getPos().getX(),
+						messageWritable.getPos().getY());
 				
 				for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
 					
-					IntWritable targetId = edge.getTargetVertexId();
+					int targetId = edge.getTargetVertexId().get();
 					
-					if (targetId.get() == srcId) {
+					if (targetId == srcId) {
 						
 						// Keep weight
-						LongWritable weight = edge.getValue().getWeight();
+						LongWritable weight = new LongWritable(edge.getValue().getWeight().get());
 						
 						vertex.setEdgeValue(
-								targetId,
-								new EdgeValueWritable(weight, messageWritable.getPos()));
+								new IntWritable(targetId),
+								new EdgeValueWritable(weight, pos));
 					}
 				}
 			}
