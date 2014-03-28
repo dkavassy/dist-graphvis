@@ -35,7 +35,7 @@ import engine.CSVEdgeInputFormat;
 import engine.FruchtermanReingoldGraphVis;
 import engine.GMLEdgeInputFormat;
 import engine.GraphMLEdgeInputFormat;
-import engine.SVGVertexTextOutputFormat;
+import engine.SVGVertexOutputFormat;
 
 /**
  * Contains integration tests for {@link FruchtermanReingoldGraphVis}
@@ -58,7 +58,7 @@ public class IntegrationTest {
 		GiraphConfiguration conf = new GiraphConfiguration();
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(CSVEdgeInputFormat.class);
-		conf.setVertexOutputFormatClass(SVGVertexTextOutputFormat.class);
+		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
 
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
@@ -109,7 +109,7 @@ public class IntegrationTest {
 		GiraphConfiguration conf = new GiraphConfiguration();
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GMLEdgeInputFormat.class);
-		conf.setVertexOutputFormatClass(SVGVertexTextOutputFormat.class);
+		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
 
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
@@ -161,7 +161,7 @@ public class IntegrationTest {
 		GiraphConfiguration conf = new GiraphConfiguration();
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GraphMLEdgeInputFormat.class);
-		conf.setVertexOutputFormatClass(SVGVertexTextOutputFormat.class);
+		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
 
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);

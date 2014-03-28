@@ -47,16 +47,16 @@ public class FruchtermanReingoldGraphVis
 		extends
 		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
 
-	private static final int SUPERSTEPS = 4;
+	private static final int SUPERSTEPS = 6;
 	
-	private static final double W = 1000.0, L = 1000.0;
+	private static final double W = 10000.0, L = 10000.0;
 	private static final double AREA = W*L;
 	
 	private static final double MIN_DIST = 0.000001;
 	
-	private static final double SPEED = W/1.0;
+	private static final double SPEED = W/1000.0;
 	
-	private static final double LIMIT = W/10.0;
+	private static final double LIMIT = 10.0;
 	
 	private static double k;
 	
@@ -76,10 +76,10 @@ public class FruchtermanReingoldGraphVis
 				
 				Random random = new Random();
 				CoordinatesWritable pos = new CoordinatesWritable(
-						(vertex.getId().get() <= 2 ? 10 : 20),
-						//(random.nextDouble() - 0.5) * 10.0,
-						(vertex.getId().get() % 2 == 0 ? 10 : 20) 
-						//(random.nextDouble() - 0.5) * 10.0
+						//(vertex.getId().get() <= 2 ? 10 : 20),
+						(random.nextDouble() - 0.5) * 10.0,
+						//(vertex.getId().get() % 2 == 0 ? 10 : 20) 
+						(random.nextDouble() - 0.5) * 10.0
 						);
 				
 				CoordinatesWritable disp        = new CoordinatesWritable(0.0,0.0);
@@ -102,7 +102,7 @@ public class FruchtermanReingoldGraphVis
 				IntWritable ownId = vertex.getId();
 				int intOwnId      = ownId.get();
 				
-				CoordinatesWritable ownPos = new CoordinatesWritable();
+				CoordinatesWritable ownPos = new CoordinatesWritable(vertex.getValue().getPos().getX(), vertex.getValue().getPos().getY());
 				
 				long totalVertices = getTotalNumVertices();
 				
@@ -119,7 +119,7 @@ public class FruchtermanReingoldGraphVis
 				}
 			}
 		}
-		else if (getSuperstep() % SUPERSTEPS == 10) {
+		else if (getSuperstep() % SUPERSTEPS == 1) {
 			// Everybody is awake
 			
 			// calculate repulsive forces between everyone
@@ -148,42 +148,8 @@ public class FruchtermanReingoldGraphVis
 			// set new disp
 			vertex.setValue(new VertexValueWritable(pos, disp));
 			
-			double dispLength = disp.length();
-			
-			if (dispLength < MIN_DIST) {
-				dispLength = 1.0; // Anything is fine here as long as it's not 0
-			}
-			
-			// Limit displacement with temperature
-			CoordinatesWritable actualDisplacement = disp
-					.divide(dispLength) // normalized vector
-					.multiply( disp.min(T) );
-			
-			// Add displacement
-			CoordinatesWritable newPos = pos.add(actualDisplacement);
-			
-			/*double x = newPos.getX(), y = newPos.getY();
-			// Limit position with frame
-			if (x > W/2) {
-				x = W/2;
-			}
-			else if (x < -W/2) {
-				x = -W/2;
-			}
-			
-			if (y > L/2) {
-				y = L/2;
-			}
-			else if (y < -L/2) {
-				y = -L/2;
-			}
-			
-			// Set new position and reset disp
-			newPos = new CoordinatesWritable(x, y);*/
-			vertex.setValue(new VertexValueWritable(newPos, new CoordinatesWritable(0.0,0.0)));
-			
 			// Send position to neighbors
-			CoordinatesWritable ownPos = newPos;
+			CoordinatesWritable ownPos = new CoordinatesWritable(pos.getX(), pos.getY());
 			IntWritable         ownId  = vertex.getId();
 			
 			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
@@ -193,7 +159,7 @@ public class FruchtermanReingoldGraphVis
 			}
 
 		}
-		else if (getSuperstep() % SUPERSTEPS == 10) {
+		else if (getSuperstep() % SUPERSTEPS == 2) {
 			// Vertices with in-edges are awake
 			
 			// anyone who received a message, calculate displacement, then
@@ -205,17 +171,17 @@ public class FruchtermanReingoldGraphVis
 			
 			// if there are no out-edges, move, otherwise wait until next step and move then
 			if (vertex.getNumEdges() == 0) {
-				moveVertex(vertex);
+				move(vertex);
 			}
 		}
-		else if (getSuperstep() % SUPERSTEPS == 10) {
+		else if (getSuperstep() % SUPERSTEPS == 3) {
 			// Vertices with out-edges are awake
 
 			// param3 true: no need to send another message back
 			applyAttractiveForces(vertex, messages, false);
 			
 			// move, those who don't have out-edges have already moved
-			moveVertex(vertex);
+			move(vertex);
 
 			// Wake up vertices with in-edges
 			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
@@ -224,12 +190,13 @@ public class FruchtermanReingoldGraphVis
 						new MessageWritable(vertex.getId(), new CoordinatesWritable()));
 			}
 		}
-		else if (getSuperstep() % SUPERSTEPS == 2) {
+		else if (getSuperstep() % SUPERSTEPS == 4) {
 			// Vertices with in-edges are awake
+
+			IntWritable         ownId  = new IntWritable(vertex.getId().get());
 			
 			CoordinatesWritable ownPos = new CoordinatesWritable(vertex.getValue().getPos().getX(),
 					vertex.getValue().getPos().getY());
-			IntWritable         ownId  = new IntWritable(vertex.getId().get());
 			
 			// Send new position back to everyone from whom a msg was rcvd
 			for (MessageWritable messageWritable : messages) {
@@ -238,7 +205,7 @@ public class FruchtermanReingoldGraphVis
 						new MessageWritable(ownId, ownPos));
 			}
 		}
-		else if (getSuperstep() % SUPERSTEPS == 3) {
+		else if (getSuperstep() % SUPERSTEPS == 5) {
 			// Vertices with out-edges are awake
 			
 			// Set neighbor's position in edge value
@@ -252,7 +219,7 @@ public class FruchtermanReingoldGraphVis
 					
 					int targetId = edge.getTargetVertexId().get();
 					
-					if (targetId == srcId) {
+					//if (targetId == srcId) {
 						
 						// Keep weight
 						LongWritable weight = new LongWritable(edge.getValue().getWeight().get());
@@ -260,7 +227,7 @@ public class FruchtermanReingoldGraphVis
 						vertex.setEdgeValue(
 								new IntWritable(targetId),
 								new EdgeValueWritable(weight, pos));
-					}
+					//}
 				}
 			}
 			
