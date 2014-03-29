@@ -77,9 +77,9 @@ public class FruchtermanReingoldGraphVis
 				Random random = new Random();
 				CoordinatesWritable pos = new CoordinatesWritable(
 						//(vertex.getId().get() <= 2 ? 10 : 20),
-						(random.nextDouble() - 0.5) * 10.0,
+						(random.nextDouble() - 0.5) * 100.0,
 						//(vertex.getId().get() % 2 == 0 ? 10 : 20) 
-						(random.nextDouble() - 0.5) * 10.0
+						(random.nextDouble() - 0.5) * 100.0
 						);
 				
 				CoordinatesWritable disp        = new CoordinatesWritable(0.0,0.0);
@@ -219,7 +219,7 @@ public class FruchtermanReingoldGraphVis
 					
 					int targetId = edge.getTargetVertexId().get();
 					
-					//if (targetId == srcId) {
+					if (targetId == srcId) {
 						
 						// Keep weight
 						LongWritable weight = new LongWritable(edge.getValue().getWeight().get());
@@ -227,7 +227,7 @@ public class FruchtermanReingoldGraphVis
 						vertex.setEdgeValue(
 								new IntWritable(targetId),
 								new EdgeValueWritable(weight, pos));
-					//}
+					}
 				}
 			}
 			
@@ -345,14 +345,11 @@ public class FruchtermanReingoldGraphVis
 			dispLength = 1;// any number should work, as disp is 0
 		}
 
-		// calculate change value, limit it to t
-		CoordinatesWritable change = disp.min(T).multiply(
-				new CoordinatesWritable(disp.getX() / dispLength, disp.getY()
-						/ dispLength));
+		
 		
 		
 		//gravity
-		//CoordinatesWritable change =disp;//added
+		CoordinatesWritable change =disp;//added
 		double gravity=10;
 		double d = (double) Math.sqrt(pos.getX()*pos.getX() + pos.getY() * pos.getY());
 		double gf = 0.01d * k * (double) gravity * d;
