@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  */
-package test;
+package graphvis.test;
 
 import static org.junit.Assert.*;
 
@@ -31,11 +31,11 @@ import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.utils.InternalVertexRunner;
 import org.junit.Test;
 
-import engine.CSVEdgeInputFormat;
-import engine.FruchtermanReingoldGraphVis;
-import engine.GMLEdgeInputFormat;
-import engine.GraphMLEdgeInputFormat;
-import engine.SVGVertexOutputFormat;
+import graphvis.engine.FruchtermanReingoldGraphVis;
+import graphvis.io.CSVEdgeInputFormat;
+import graphvis.io.GMLEdgeInputFormat;
+import graphvis.io.GraphMLEdgeInputFormat;
+import graphvis.io.SVGVertexOutputFormat;
 
 /**
  * Contains integration tests for {@link FruchtermanReingoldGraphVis}

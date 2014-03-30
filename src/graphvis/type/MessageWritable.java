@@ -1,5 +1,5 @@
 /*
- * @(\#) EdgeValueWritable.java 1.1 10 March 20
+ * @(\#) MessageWritable.java 1.1 10 March 20
 
  *
  * Copyright (\copyright) 2014 University of York & British Telecommunications plc
@@ -42,82 +42,103 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.type;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.IntWritable;
 
 /** 
- * A class that can be used as the value of an edge. 
- * This class contains edge weight and the target position of an edge. 
+ * A class that can be used as the message type. 
+ * This class contains message source vertex id and a vector of coordinates. 
  * <p> 
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class EdgeValueWritable 
-implements org.apache.hadoop.io.Writable {
+public class MessageWritable implements org.apache.hadoop.io.Writable {
 	
-	private LongWritable           weight = new LongWritable();
-	private CoordinatesWritable targetPos = new CoordinatesWritable();
+	private IntWritable srcId = new IntWritable();
+	private CoordinatesWritable pos = new CoordinatesWritable();
 	
 	/** 
 	 * Default constructor.
 	 */
-	public EdgeValueWritable() {
+	public MessageWritable() {
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public EdgeValueWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
+	public MessageWritable(IntWritable srcId, CoordinatesWritable pos) {
 		super();
-		set(edgeValue, targetValue);
+		set(srcId, pos);
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		weight.readFields(in);
-		targetPos.readFields(in);
+		srcId.readFields(in);
+		pos.readFields(in);
 	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		weight.write(out);
-		targetPos.write(out);
+		srcId.write(out);
+		pos.write(out);
 	}
 	
 	@Override
 	public String toString() {
-		return "edge weight: " + weight + "; target pos: " + targetPos;
+		return "srcId: " + srcId + "; pos: " + pos;
 	}
 	
 	/** 
-	 * Return the edge weight
-	 * @return a LongWritable 
+	 * Return the source id
+	 * @return a IntWritable 
 	 */
-	public LongWritable getWeight() {
-		return weight;
+	public IntWritable getSrcId() {
+		return srcId;
 	}
-
+	
 	/** 
-	 * Return the target position
+	 * Return the vector of coordinates
 	 * @return a CoordinatesWritable 
 	 */
-	public CoordinatesWritable getTargetPos() {
-		return targetPos;
+	public CoordinatesWritable getPos() {
+		return pos;
 	}
 
 	/** 
-	 * Set new edge value.
-	 * @param edgeValue the edge weight. 
-	 * @param targetPos  the target vertex position. 
+	 * Set new message.
+	 * @param srcId the source id. 
+	 * @param pos the vector. 
 	 */
-	public void set(LongWritable edgeValue, CoordinatesWritable targetPos) {
-		this.weight  = edgeValue;
-		this.targetPos  = targetPos;
+	public void set(IntWritable srcId, CoordinatesWritable pos) {
+		this.srcId = srcId;
+		this.pos  = pos;
+	}
+
+	/** 
+	 * Compare two messages, if they come from the same source and their x and y are all the same,
+	 * then they are the same message.
+	 * @param another MessageWritable. 
+	 * @return boolean. 
+	 * @see MessageWritable 
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		MessageWritable other = (MessageWritable)  obj;
+		if(other.getSrcId().equals(srcId)){
+			if(other.getPos().equals(pos)){
+				return true;
+			}
+		}
+		
+		
+		
+		return false;
+		
 	}
 
 }

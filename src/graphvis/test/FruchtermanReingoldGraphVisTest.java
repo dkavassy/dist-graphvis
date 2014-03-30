@@ -24,7 +24,7 @@
  *
  */
 
-package test;
+package graphvis.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -37,7 +37,11 @@ import org.apache.giraph.utils.MockUtils;
 import org.apache.hadoop.io.*;
 import org.junit.Test;
 
-import engine.*;
+import graphvis.engine.*;
+import graphvis.type.CoordinatesWritable;
+import graphvis.type.EdgeValueWritable;
+import graphvis.type.MessageWritable;
+import graphvis.type.VertexValueWritable;
 
 /**
  * Contains unit tests for {@link FruchtermanReingoldGraphVis}

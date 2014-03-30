@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.type;
 
 import java.io.DataInput;
 import java.io.DataOutput;

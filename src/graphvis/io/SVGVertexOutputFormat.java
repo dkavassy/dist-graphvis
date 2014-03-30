@@ -23,7 +23,10 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.io;
+
+import graphvis.type.EdgeValueWritable;
+import graphvis.type.VertexValueWritable;
 
 import java.io.IOException;
 

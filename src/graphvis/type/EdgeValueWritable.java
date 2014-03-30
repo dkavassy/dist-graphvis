@@ -1,5 +1,5 @@
 /*
- * @(\#) VertexValueWritable.java 1.1 10 March 20
+ * @(\#) EdgeValueWritable.java 1.1 10 March 20
 
  *
  * Copyright (\copyright) 2014 University of York & British Telecommunications plc
@@ -42,79 +42,82 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.type;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.apache.hadoop.io.LongWritable;
+
 /** 
- * A class that can be used as the value of a vertex. 
- * This class contains the position and displacement of a vertex. 
+ * A class that can be used as the value of an edge. 
+ * This class contains edge weight and the target position of an edge. 
  * <p> 
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class VertexValueWritable implements org.apache.hadoop.io.Writable {
+public class EdgeValueWritable 
+implements org.apache.hadoop.io.Writable {
 	
-	private CoordinatesWritable pos  = new CoordinatesWritable();
-	private CoordinatesWritable disp = new CoordinatesWritable();
+	private LongWritable           weight = new LongWritable();
+	private CoordinatesWritable targetPos = new CoordinatesWritable();
 	
 	/** 
 	 * Default constructor.
 	 */
-	public VertexValueWritable() {
+	public EdgeValueWritable() {
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public VertexValueWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
+	public EdgeValueWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
 		super();
-		set(pos, disp);
+		set(edgeValue, targetValue);
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		pos.readFields(in);
-		disp.readFields(in);
+		weight.readFields(in);
+		targetPos.readFields(in);
 	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		pos.write(out);
-		disp.write(out);
+		weight.write(out);
+		targetPos.write(out);
 	}
 	
 	@Override
 	public String toString() {
-		return "pos: " + pos;
-	}
-
-	/** 
-	 * Return the position of the vertex
-	 * @return a CoordinatesWritable 
-	 */
-	public CoordinatesWritable getPos() {
-		return pos;
+		return "edge weight: " + weight + "; target pos: " + targetPos;
 	}
 	
 	/** 
-	 * Return the displacement of the vertex
-	 * @return a CoordinatesWritable 
+	 * Return the edge weight
+	 * @return a LongWritable 
 	 */
-	public CoordinatesWritable getDisp() {
-		return disp;
+	public LongWritable getWeight() {
+		return weight;
 	}
 
 	/** 
-	 * Set new vertex value.
-	 * @param pos the position. 
-	 * @param disp  the displacement. 
+	 * Return the target position
+	 * @return a CoordinatesWritable 
 	 */
-	public void set(CoordinatesWritable pos, CoordinatesWritable disp) {
-		this.pos  = pos;
-		this.disp = disp;
+	public CoordinatesWritable getTargetPos() {
+		return targetPos;
+	}
+
+	/** 
+	 * Set new edge value.
+	 * @param edgeValue the edge weight. 
+	 * @param targetPos  the target vertex position. 
+	 */
+	public void set(LongWritable edgeValue, CoordinatesWritable targetPos) {
+		this.weight  = edgeValue;
+		this.targetPos  = targetPos;
 	}
 
 }

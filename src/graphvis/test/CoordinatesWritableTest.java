@@ -23,7 +23,7 @@
  * THE SOFTWARE.
  *
  */
-package test;
+package graphvis.test;
 
 import static org.junit.Assert.*;
 
@@ -31,8 +31,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import engine.CoordinatesWritable;
-import engine.FruchtermanReingoldGraphVis;
+import graphvis.engine.FruchtermanReingoldGraphVis;
+import graphvis.type.CoordinatesWritable;
 
 
 /** 

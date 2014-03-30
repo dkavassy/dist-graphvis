@@ -42,7 +42,10 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.io;
+
+import graphvis.type.CoordinatesWritable;
+import graphvis.type.EdgeValueWritable;
 
 import java.io.IOException;
 import java.util.regex.Pattern;

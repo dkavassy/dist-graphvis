@@ -24,7 +24,12 @@
  *
  */
 
-package engine;
+package graphvis.engine;
+
+import graphvis.type.CoordinatesWritable;
+import graphvis.type.EdgeValueWritable;
+import graphvis.type.MessageWritable;
+import graphvis.type.VertexValueWritable;
 
 import java.io.IOException;
 import java.util.Random;

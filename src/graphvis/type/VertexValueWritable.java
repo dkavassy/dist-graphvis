@@ -1,5 +1,5 @@
 /*
- * @(\#) MessageWritable.java 1.1 10 March 20
+ * @(\#) VertexValueWritable.java 1.1 10 March 20
 
  *
  * Copyright (\copyright) 2014 University of York & British Telecommunications plc
@@ -42,103 +42,79 @@
  * THE SOFTWARE.
  *
  */
-package engine;
+package graphvis.type;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
-
 /** 
- * A class that can be used as the message type. 
- * This class contains message source vertex id and a vector of coordinates. 
+ * A class that can be used as the value of a vertex. 
+ * This class contains the position and displacement of a vertex. 
  * <p> 
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class MessageWritable implements org.apache.hadoop.io.Writable {
+public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	
-	private IntWritable srcId = new IntWritable();
-	private CoordinatesWritable pos = new CoordinatesWritable();
+	private CoordinatesWritable pos  = new CoordinatesWritable();
+	private CoordinatesWritable disp = new CoordinatesWritable();
 	
 	/** 
 	 * Default constructor.
 	 */
-	public MessageWritable() {
+	public VertexValueWritable() {
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public MessageWritable(IntWritable srcId, CoordinatesWritable pos) {
+	public VertexValueWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
 		super();
-		set(srcId, pos);
+		set(pos, disp);
 	}
 
 	@Override
 	public void readFields(DataInput in) throws IOException {
-		srcId.readFields(in);
 		pos.readFields(in);
+		disp.readFields(in);
 	}
 
 	@Override
 	public void write(DataOutput out) throws IOException {
-		srcId.write(out);
 		pos.write(out);
+		disp.write(out);
 	}
 	
 	@Override
 	public String toString() {
-		return "srcId: " + srcId + "; pos: " + pos;
+		return "pos: " + pos;
 	}
-	
+
 	/** 
-	 * Return the source id
-	 * @return a IntWritable 
-	 */
-	public IntWritable getSrcId() {
-		return srcId;
-	}
-	
-	/** 
-	 * Return the vector of coordinates
+	 * Return the position of the vertex
 	 * @return a CoordinatesWritable 
 	 */
 	public CoordinatesWritable getPos() {
 		return pos;
 	}
-
+	
 	/** 
-	 * Set new message.
-	 * @param srcId the source id. 
-	 * @param pos the vector. 
+	 * Return the displacement of the vertex
+	 * @return a CoordinatesWritable 
 	 */
-	public void set(IntWritable srcId, CoordinatesWritable pos) {
-		this.srcId = srcId;
-		this.pos  = pos;
+	public CoordinatesWritable getDisp() {
+		return disp;
 	}
 
 	/** 
-	 * Compare two messages, if they come from the same source and their x and y are all the same,
-	 * then they are the same message.
-	 * @param another MessageWritable. 
-	 * @return boolean. 
-	 * @see MessageWritable 
+	 * Set new vertex value.
+	 * @param pos the position. 
+	 * @param disp  the displacement. 
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		MessageWritable other = (MessageWritable)  obj;
-		if(other.getSrcId().equals(srcId)){
-			if(other.getPos().equals(pos)){
-				return true;
-			}
-		}
-		
-		
-		
-		return false;
-		
+	public void set(CoordinatesWritable pos, CoordinatesWritable disp) {
+		this.pos  = pos;
+		this.disp = disp;
 	}
 
 }
