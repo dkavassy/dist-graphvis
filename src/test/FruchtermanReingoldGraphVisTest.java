@@ -25,17 +25,14 @@
  */
 
 package test;
-import static org.mockito.Mockito.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
-import org.apache.giraph.conf.GiraphConfiguration;
 import org.apache.giraph.edge.EdgeFactory;
 import org.apache.giraph.graph.DefaultVertex;
 import org.apache.giraph.graph.Vertex;
-import org.apache.giraph.utils.InternalVertexRunner;
 import org.apache.giraph.utils.MockUtils;
 import org.apache.hadoop.io.*;
 import org.junit.Test;
@@ -77,9 +74,9 @@ public class FruchtermanReingoldGraphVisTest {
 		assertTrue(vertex.isHalted());
 		//cool should not be called in superstep0
 		assertEquals(0,tBefore-tAfter,0);
-		//random positions should be between -500 and 500
-		assertEquals(0,vertex.getValue().getPos().getX(),500);
-		assertEquals(0,vertex.getValue().getPos().getY(),500);
+		//random positions should be between -50 and 50
+		assertEquals(0,vertex.getValue().getPos().getX(),50);
+		assertEquals(0,vertex.getValue().getPos().getY(),50);
 		
 	}
 	
@@ -99,7 +96,6 @@ public class FruchtermanReingoldGraphVisTest {
 				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
 						new VertexValueWritable(), false,
 						computation, 1L);
-		//Mockito.when(SOURCE_ID.get(env.getConfiguration())).thenReturn(2L);
 		vertex.setValue(new VertexValueWritable(new CoordinatesWritable(532,542),new CoordinatesWritable(322,445)));
 		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
 				new EdgeValueWritable()));
@@ -131,7 +127,6 @@ public class FruchtermanReingoldGraphVisTest {
 				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
 						new VertexValueWritable(), false,
 						computation, 2L);
-		//Mockito.when(SOURCE_ID.get(env.getConfiguration())).thenReturn(2L);
 		vertex.setValue(new VertexValueWritable(new CoordinatesWritable(10,20),new CoordinatesWritable(0,0)));
 		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
 				new EdgeValueWritable()));
@@ -175,8 +170,132 @@ public class FruchtermanReingoldGraphVisTest {
 
 		assertTrue(vertex.isHalted());
 		
-		assertTrue(vertex.getEdgeValue(new IntWritable(2)).getTargetPos().equals(new CoordinatesWritable(10,20)));
-		//env.verifyMessageSent(new IntWritable(2), new MessageWritable(new IntWritable(1),new CoordinatesWritable(10,20)));
-		//env.verifyMessageSent(new IntWritable(3), new MessageWritable(new IntWritable(1),new CoordinatesWritable(10,20)));
+		env.verifyMessageSent(new IntWritable(2), new MessageWritable(new IntWritable(1),new CoordinatesWritable()));
+		env.verifyMessageSent(new IntWritable(3), new MessageWritable(new IntWritable(1),new CoordinatesWritable()));
+	}
+	
+	
+	/**
+	 * Test the messages after finishes superstep4
+	 */
+	@Test
+	public void testSuperstep4() throws Exception {
+		//messages: positions of other vertices
+		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
+		messages.add(new MessageWritable(new IntWritable(2),new CoordinatesWritable(545,234)));
+		messages.add(new MessageWritable(new IntWritable(3),new CoordinatesWritable(242,677)));
+		Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex = 
+				new DefaultVertex<IntWritable, VertexValueWritable, EdgeValueWritable>();
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		MockUtils.MockedEnvironment<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
+				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
+						new VertexValueWritable(), false,
+						computation, 4L);
+		vertex.setValue(new VertexValueWritable(new CoordinatesWritable(10,20),new CoordinatesWritable(0,0)));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
+				new EdgeValueWritable()));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(3),
+				new EdgeValueWritable()));
+
+		
+		computation.compute(vertex, messages);
+
+		assertTrue(vertex.isHalted());
+		env.verifyMessageSent(new IntWritable(2), new MessageWritable(new IntWritable(1),new CoordinatesWritable(10,20)));
+		env.verifyMessageSent(new IntWritable(3), new MessageWritable(new IntWritable(1),new CoordinatesWritable(10,20)));
+	}
+	
+	
+	/**
+	 * Test superstep5
+	 */
+	@Test
+	public void testSuperstep5() throws Exception {
+		//messages: positions of other vertices
+		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
+		messages.add(new MessageWritable(new IntWritable(2),new CoordinatesWritable(545,234)));
+		messages.add(new MessageWritable(new IntWritable(3),new CoordinatesWritable(242,677)));
+		Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex = 
+				new DefaultVertex<IntWritable, VertexValueWritable, EdgeValueWritable>();
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		MockUtils.MockedEnvironment<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
+				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
+						new VertexValueWritable(), false,
+						computation, 5L);
+		vertex.setValue(new VertexValueWritable(new CoordinatesWritable(10,20),new CoordinatesWritable(0,0)));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
+				new EdgeValueWritable()));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(3),
+				new EdgeValueWritable()));
+
+		
+		computation.compute(vertex, messages);
+
+		assertTrue(vertex.isHalted());
+		assertEquals(new CoordinatesWritable(545,234),vertex.getEdgeValue(new IntWritable(2)).getTargetPos());
+		assertEquals(new CoordinatesWritable(242,677),vertex.getEdgeValue(new IntWritable(3)).getTargetPos());
+	}
+	
+	/**
+	 * Test superstep6
+	 */
+	@Test
+	public void testSuperstep6() throws Exception {
+	
+		Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex = 
+				new DefaultVertex<IntWritable, VertexValueWritable, EdgeValueWritable>();
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		double tBefore = FruchtermanReingoldGraphVis.getT();
+		MockUtils.MockedEnvironment<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
+				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
+						new VertexValueWritable(), false,
+						computation, 6L);
+		vertex.setValue(new VertexValueWritable());
+		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
+				new EdgeValueWritable()));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(3),
+				new EdgeValueWritable()));
+
+		
+		computation.compute(vertex, new ArrayList<MessageWritable>());
+		double tAfter = FruchtermanReingoldGraphVis.getT();
+		
+		assertTrue(vertex.isHalted());
+		//cool should be called in superstep6
+		assertEquals(10,tBefore-tAfter,0);
+		
+		
+	}
+	
+	/**
+	 * Test superstep606
+	 */
+	@Test
+	public void testSuperstep606() throws Exception {
+	
+		Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex = 
+				new DefaultVertex<IntWritable, VertexValueWritable, EdgeValueWritable>();
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		double tBefore = FruchtermanReingoldGraphVis.getT();
+		MockUtils.MockedEnvironment<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
+				MockUtils.prepareVertexAndComputation(vertex, new IntWritable(1),
+						new VertexValueWritable(), false,
+						computation, 606L);
+		vertex.setValue(new VertexValueWritable());
+		vertex.addEdge(EdgeFactory.create(new IntWritable(2),
+				new EdgeValueWritable()));
+		vertex.addEdge(EdgeFactory.create(new IntWritable(3),
+				new EdgeValueWritable()));
+
+		
+		computation.compute(vertex, new ArrayList<MessageWritable>());
+		double tAfter = FruchtermanReingoldGraphVis.getT();
+		
+		assertTrue(vertex.isHalted());
+		//cool should be called in superstep6
+		assertEquals(10,tBefore-tAfter,0);
+		//computation should stop after this superstep, so no messages should be sent
+		env.verifyNoMessageSent();
+		
 	}
 }

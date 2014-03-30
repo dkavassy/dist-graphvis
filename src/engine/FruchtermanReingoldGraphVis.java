@@ -32,8 +32,11 @@ import java.util.Random;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.giraph.io.EdgeReader;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
 /** 
  * A class that represents coordinates of a vector. 
@@ -43,31 +46,38 @@ import org.apache.hadoop.io.LongWritable;
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class FruchtermanReingoldGraphVis
-		extends
-		BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
-
+public class FruchtermanReingoldGraphVis extends BasicComputation<IntWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> {
+	
+	//number of supersteps per iteration
 	private static final int SUPERSTEPS = 6;
-	
+	//canvas height and width
 	private static final double W = 10000.0, L = 10000.0;
+	//the area of graph visualization
 	private static final double AREA = W*L;
-	
+	//minimum distance between two vertices
 	private static final double MIN_DIST = 0.000001;
-	
+	//amount of temperature goes down after each iteration
 	private static final double SPEED = W/1000.0;
-	
+	//limit the distance in which a vertex can move from the center
 	private static final double LIMIT = 10.0;
 	
 	private static double k;
-	
 	private static double T = W/10.0;
 
+	
+	/**
+	* Apply the FruchtermanReingold algorithm on every vertex. Divided in to 6 supersteps.
+	* @param vertex the vertex to calculate on
+	* @param messages messages received from previous superstep
+	* @throws IOException
+	*/
 	@Override
 	public void compute(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
-			Iterable<MessageWritable> messages) throws IOException {
+			Iterable<MessageWritable> messages) 
+					throws IOException {
 
-		// Super Step 1
+		// Super Step 0
 		if (getSuperstep() % SUPERSTEPS == 0) {
 			// Everybody is awake
 			
@@ -76,20 +86,15 @@ public class FruchtermanReingoldGraphVis
 				
 				Random random = new Random();
 				CoordinatesWritable pos = new CoordinatesWritable(
-						//(vertex.getId().get() <= 2 ? 10 : 20),
 						(random.nextDouble() - 0.5) * 100.0,
-						//(vertex.getId().get() % 2 == 0 ? 10 : 20) 
 						(random.nextDouble() - 0.5) * 100.0
 						);
 				
 				CoordinatesWritable disp        = new CoordinatesWritable(0.0,0.0);
 				VertexValueWritable vertexValue = new VertexValueWritable(pos, disp);
-
 				vertex.setValue(vertexValue);
-				
 				k = Math.sqrt(AREA / getTotalNumVertices());
-			}
-			else {
+			}else {
 				// If it's not the very first superstep, let's chill!
 				if (vertex.getId().get() == 1) {
 					cool();
@@ -131,7 +136,6 @@ public class FruchtermanReingoldGraphVis
 			for (MessageWritable messageWritable : messages) {
 				
 				CoordinatesWritable otherPos = messageWritable.getPos();
-				
 				CoordinatesWritable delta    = pos.subtract(otherPos);
 				double deltaLength           = delta.length();
 			
@@ -241,10 +245,23 @@ public class FruchtermanReingoldGraphVis
 		vertex.voteToHalt();
 	}
 	
+	
+	/**
+	* generate random distance coordinates if two vertices are in the same position
+	* coordinates should be between (-0.5,-0.5) to (0.5,0.5)
+	* @return new CoordinatesWritable with random x and y
+	*/
 	private CoordinatesWritable makeUpDelta() {
 		return new CoordinatesWritable((new Random()).nextDouble()-0.5, (new Random()).nextDouble()-0.5);
 	}
 
+	
+	/**
+	* Calculate the attractive forces between a vertex and its neighbors. Reply its own position if it has in-edges.
+	* @param vertex the vertex to calculate on
+	* @param messages the messages with neighbors' positions
+	* @param sendMessageBack a boolean to control whether to reply messages
+	*/
 	private void applyAttractiveForces(
 			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex,
 			Iterable<MessageWritable> messages,
@@ -289,52 +306,13 @@ public class FruchtermanReingoldGraphVis
 		vertex.setValue(new VertexValueWritable(ownPos, disp));
 	}
 	
-	private void moveVertex(Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
-		
-		VertexValueWritable vertexValue = vertex.getValue();
-		CoordinatesWritable pos         = vertexValue.getPos();
-		CoordinatesWritable disp        = vertexValue.getDisp();
-		
-		double dispLength = disp.length();
-		
-		if (dispLength < MIN_DIST) {
-			dispLength = 1.0; // Anything is fine here as long as it's not 0
-		}
-		
-		// Limit displacement with temperature
-		CoordinatesWritable actualDisplacement = disp
-				.divide(dispLength) // normalized vector
-				.multiply( disp.min(T) );
-		
-		// Add displacement
-		CoordinatesWritable newPos = pos.add(actualDisplacement);
-		
-		/*double x = newPos.getX(), y = newPos.getY();
-		// Limit position with frame
-		if (x > W/2) {
-			x = W/2;
-		}
-		else if (x < -W/2) {
-			x = -W/2;
-		}
-		
-		if (y > L/2) {
-			y = L/2;
-		}
-		else if (y < -L/2) {
-			y = -L/2;
-		}
-		
-		// Set new position and reset disp
-		newPos = new CoordinatesWritable(x, y);*/
-		vertex.setValue(new VertexValueWritable(newPos, new CoordinatesWritable(0.0,0.0)));
-	}
 
 	/**
-	 * @param vertex
-	 */
-	private void move(
-			Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
+	* Move a vertex according to its displacement. Apply gravity to avoid vertices moving too far away from the center of graph.
+	* Limit the speed of movement of vertices so as to prevent vertices from moving outside the canvas.
+	* @param vertex the vertex to move
+	*/
+	private void move(Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex) {
 		
 		CoordinatesWritable pos = vertex.getValue().getPos();
 		CoordinatesWritable disp = vertex.getValue().getDisp();
@@ -344,9 +322,6 @@ public class FruchtermanReingoldGraphVis
 		if (dispLength == 0) {
 			dispLength = 1;// any number should work, as disp is 0
 		}
-
-		
-		
 		
 		//gravity
 		CoordinatesWritable change =disp;//added
@@ -358,8 +333,7 @@ public class FruchtermanReingoldGraphVis
 		
 		//to a small number
 		change=new CoordinatesWritable(change.getX()/LIMIT,change.getY()/LIMIT);
-		
-		
+				
 		
 		// limit
 		double limitedDist = Math.min((Math.sqrt(AREA)/10) * (1.0 / LIMIT), dispLength);
@@ -368,23 +342,34 @@ public class FruchtermanReingoldGraphVis
 
 		// set new position
 		pos = pos.add(change);
-		vertex.setValue(new VertexValueWritable(pos, new CoordinatesWritable()));// clear
-																					// the
-																					// disp
+		vertex.setValue(new VertexValueWritable(pos, new CoordinatesWritable()));
 	}
 
+	/**
+	* Subtract the temperature by SPEED to cool down the whole environment to 
+	* prevent vertices from moving permanently
+	*/
 	// Linear cooling function
 	private void cool() {
 		T = T - SPEED;
 	}
 
-	// Attractive force
+	
+	/**
+	* The function for calculating attractive force.
+	* @param x the distance of two vertices
+	* @return a double which is the attractive force
+	*/
 	private double fa(double x) {
 		
 		return x*x / k;
 	}
 
-	// Repulsive force
+	/**
+	* The function for calculating repulsive force.
+	* @param z the distance of two vertices
+	* @return a double which is the repulsive force
+	*/
 	private double fr(double z) {
 
 		return  k*k / z;
