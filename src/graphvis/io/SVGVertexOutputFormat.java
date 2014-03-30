@@ -93,20 +93,20 @@ public class SVGVertexOutputFormat
 				long y2 = (long) ((edge.getValue()).getTargetPos().getY() + L / 2);
 				str.append("<line x1=\"" + x + "\" y1=\"" + y + "\" x2=\"" + x2
 						+ "\" y2=\"" + y2
-						+ "\" stroke=\"blue\" stroke-width=\"0.5\" />");
+						+ "\" stroke=\"blue\" stroke-width=\"0.2\" />");
 
 				str.append("<circle cx=\""
 						+ x2
 						+ "\" cy=\""
 						+ y2
-						+ "\" r=\"1\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
+						+ "\" r=\"1\" stroke=\"red\" stroke-width=\"5\" fill=\"red\" />");
 			}
 
 			str.append("<circle cx=\""
 					+ x
 					+ "\" cy=\""
 					+ y
-					+ "\" r=\"1\" stroke=\"red\" stroke-width=\"1\" fill=\"red\" />");
+					+ "\" r=\"1\" stroke=\"red\" stroke-width=\"5\" fill=\"red\" />");
 
 			return new Text(str.toString());
 		}

@@ -64,7 +64,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<IntWritable, V
 	//amount of temperature goes down after each iteration
 	private static final double SPEED = W/1000.0;
 	//limit the distance in which a vertex can move from the center
-	private static final double LIMIT = 10.0;
+	private static final double LIMIT = 3.0;
 	
 	private static double k;
 	private static double T = W/10.0;
