@@ -27,7 +27,9 @@ package graphvis.test;
 
 import static org.junit.Assert.*;
 
+import org.apache.giraph.conf.BooleanConfOption;
 import org.apache.giraph.conf.GiraphConfiguration;
+import org.apache.giraph.conf.IntConfOption;
 import org.apache.giraph.utils.InternalVertexRunner;
 import org.junit.Test;
 
@@ -59,7 +61,9 @@ public class IntegrationTest {
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(CSVEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
+		 
 
+		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output="";
@@ -110,7 +114,8 @@ public class IntegrationTest {
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GMLEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
-
+		conf.setMaxNumberOfSupersteps(10000);
+		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output="";
@@ -162,7 +167,8 @@ public class IntegrationTest {
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GraphMLEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
-
+		conf.setMaxNumberOfSupersteps(10000);
+		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output="";
