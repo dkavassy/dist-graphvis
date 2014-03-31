@@ -104,7 +104,7 @@ public class VectorWritableTest {
 	 * the result of multiplying x and y of the two given CoordinatesWritables
 	 */
 	@Test
-	public void testMultiplyCoordinatesWritable() {
+	public void testMultiplyVertexWritable() {
 		VectorWritable other = new VectorWritable(45.0,78.0);
 		assertEquals(12.0*45.0,c.multiply(other).getX(),0);
 		assertEquals(34.0*78.0,c.multiply(other).getY(),0);
