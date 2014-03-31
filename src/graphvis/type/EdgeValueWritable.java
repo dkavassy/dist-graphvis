@@ -60,7 +60,7 @@ public class EdgeValueWritable
 implements org.apache.hadoop.io.Writable {
 	
 	private LongWritable           weight = new LongWritable();
-	private CoordinatesWritable targetPos = new CoordinatesWritable();
+	private VectorWritable targetPos = new VectorWritable();
 	
 	/** 
 	 * Default constructor.
@@ -72,7 +72,7 @@ implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Constructor.
 	 */
-	public EdgeValueWritable(LongWritable edgeValue, CoordinatesWritable targetValue) {
+	public EdgeValueWritable(LongWritable edgeValue, VectorWritable targetValue) {
 		super();
 		set(edgeValue, targetValue);
 	}
@@ -106,7 +106,7 @@ implements org.apache.hadoop.io.Writable {
 	 * Return the target position
 	 * @return a CoordinatesWritable 
 	 */
-	public CoordinatesWritable getTargetPos() {
+	public VectorWritable getTargetPos() {
 		return targetPos;
 	}
 
@@ -115,7 +115,7 @@ implements org.apache.hadoop.io.Writable {
 	 * @param edgeValue the edge weight. 
 	 * @param targetPos  the target vertex position. 
 	 */
-	public void set(LongWritable edgeValue, CoordinatesWritable targetPos) {
+	public void set(LongWritable edgeValue, VectorWritable targetPos) {
 		this.weight  = edgeValue;
 		this.targetPos  = targetPos;
 	}

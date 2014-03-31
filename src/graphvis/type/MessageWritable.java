@@ -47,7 +47,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 
 /** 
  * A class that can be used as the message type. 
@@ -58,8 +58,8 @@ import org.apache.hadoop.io.IntWritable;
  */ 
 public class MessageWritable implements org.apache.hadoop.io.Writable {
 	
-	private IntWritable srcId = new IntWritable();
-	private CoordinatesWritable pos = new CoordinatesWritable();
+	private LongWritable srcId = new LongWritable();
+	private VectorWritable pos = new VectorWritable();
 	
 	/** 
 	 * Default constructor.
@@ -71,7 +71,7 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Constructor.
 	 */
-	public MessageWritable(IntWritable srcId, CoordinatesWritable pos) {
+	public MessageWritable(LongWritable srcId, VectorWritable pos) {
 		super();
 		set(srcId, pos);
 	}
@@ -97,7 +97,7 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * Return the source id
 	 * @return a IntWritable 
 	 */
-	public IntWritable getSrcId() {
+	public LongWritable getSrcId() {
 		return srcId;
 	}
 	
@@ -105,7 +105,7 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * Return the vector of coordinates
 	 * @return a CoordinatesWritable 
 	 */
-	public CoordinatesWritable getPos() {
+	public VectorWritable getPos() {
 		return pos;
 	}
 
@@ -114,9 +114,9 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * @param srcId the source id. 
 	 * @param pos the vector. 
 	 */
-	public void set(IntWritable srcId, CoordinatesWritable pos) {
+	public void set(LongWritable srcId, VectorWritable pos) {
 		this.srcId = srcId;
-		this.pos  = pos;
+		this.pos   = pos;
 	}
 
 	/** 
@@ -135,10 +135,7 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 			}
 		}
 		
-		
-		
 		return false;
-		
 	}
 
 }

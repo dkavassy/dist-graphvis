@@ -75,17 +75,17 @@ public class IntegrationTest {
         int result = output.indexOf(l);
         while(result !=-1)
         {
-        result = output.indexOf(l,result+1);
-
-        lineCount++;
+	        result = output.indexOf(l,result+1);
+	
+	        lineCount++;
         }
         
         result = output.indexOf(c);
         while(result !=-1)
         {
-        result = output.indexOf(c,result+1);
-
-        circleCount++;
+	        result = output.indexOf(c,result+1);
+	
+	        circleCount++;
         }
         //contains 6 edges and 4 vertices
         assertEquals(6,lineCount);
@@ -126,17 +126,17 @@ public class IntegrationTest {
         int result = output.indexOf(l);
         while(result !=-1)
         {
-        result = output.indexOf(l,result+1);
-
-        lineCount++;
+	        result = output.indexOf(l,result+1);
+	
+	        lineCount++;
         }
         
         result = output.indexOf(c);
         while(result !=-1)
         {
-        result = output.indexOf(c,result+1);
-
-        circleCount++;
+	        result = output.indexOf(c,result+1);
+	
+	        circleCount++;
         }
         //contains 6 edges and 4 vertices
         assertEquals(3,lineCount);
@@ -178,18 +178,19 @@ public class IntegrationTest {
         int result = output.indexOf(l);
         while(result !=-1)
         {
-        result = output.indexOf(l,result+1);
-
-        lineCount++;
+	        result = output.indexOf(l,result+1);
+	
+	        lineCount++;
         }
         
         result = output.indexOf(c);
         while(result !=-1)
         {
-        result = output.indexOf(c,result+1);
-
-        circleCount++;
+	        result = output.indexOf(c,result+1);
+	
+	        circleCount++;
         }
+        
         //contains 6 edges and 4 vertices
         assertEquals(3,lineCount);
         //print circles for each edge and for each vertex, so it's number of edges + number of edges

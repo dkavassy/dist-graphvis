@@ -33,7 +33,7 @@ import java.io.IOException;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.io.formats.TextVertexOutputFormat;
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
 
@@ -46,7 +46,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 */
 public class SVGVertexOutputFormat
 		extends
-		TextVertexOutputFormat<IntWritable, VertexValueWritable, EdgeValueWritable> {
+		TextVertexOutputFormat<LongWritable, VertexValueWritable, EdgeValueWritable> {
 
 	/** Specify the output delimiter */
 	public static final String LINE_TOKENIZE_VALUE = "output.delimiter";
@@ -77,7 +77,7 @@ public class SVGVertexOutputFormat
 
 		@Override
 		protected Text convertVertexToLine(
-				Vertex<IntWritable, VertexValueWritable, EdgeValueWritable> vertex)
+				Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex)
 				throws IOException {
 			long x = (long) (vertex.getValue().getPos().getX() + W / 2);
 			long y = (long) (vertex.getValue().getPos().getY() + L / 2);
@@ -87,7 +87,7 @@ public class SVGVertexOutputFormat
 			str.append(delimiter);
 
 			// Create input svg style.
-			for (Edge<IntWritable, EdgeValueWritable> edge : vertex.getEdges()) {
+			for (Edge<LongWritable, EdgeValueWritable> edge : vertex.getEdges()) {
 
 				long x2 = (long) ((edge.getValue()).getTargetPos().getX() + W / 2);
 				long y2 = (long) ((edge.getValue()).getTargetPos().getY() + L / 2);

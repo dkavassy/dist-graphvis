@@ -44,7 +44,7 @@
  */
 package graphvis.io;
 
-import graphvis.type.CoordinatesWritable;
+import graphvis.type.VectorWritable;
 import graphvis.type.EdgeValueWritable;
 
 import java.io.IOException;
@@ -65,7 +65,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class GMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueWritable> {
+public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable> {
 
 	
 	/**
@@ -79,7 +79,7 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 	* @throws IOException
 	*/
 	@Override
-	public EdgeReader<IntWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
+	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
 			throws IOException {
 		// TODO Auto-generated method stub
 		return new GMLEdgeReader();
@@ -101,9 +101,9 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 		   * @see IntWritable 
 		   */
 		@Override
-		protected IntWritable getSourceVertexId(IntPair endpoints)
+		protected LongWritable getSourceVertexId(IntPair endpoints)
 				throws IOException {
-			return new IntWritable(endpoints.getFirst());
+			return new LongWritable(endpoints.getFirst());
 		}
 
 		/** 
@@ -115,9 +115,9 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 		   * @see IntWritable 
 		   */
 		@Override
-		protected IntWritable getTargetVertexId(IntPair endpoints)
+		protected LongWritable getTargetVertexId(IntPair endpoints)
 				throws IOException {
-			return new IntWritable(endpoints.getSecond());
+			return new LongWritable(endpoints.getSecond());
 		}
 
 		/** 
@@ -130,7 +130,7 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeVal
 		   */
 		@Override
 		protected EdgeValueWritable getValue(IntPair arg0) throws IOException {
-			return new EdgeValueWritable(new LongWritable(0L), new CoordinatesWritable());
+			return new EdgeValueWritable(new LongWritable(0L), new VectorWritable());
 		}
 
 		/** 

@@ -56,8 +56,8 @@ import java.io.IOException;
  */ 
 public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	
-	private CoordinatesWritable pos  = new CoordinatesWritable();
-	private CoordinatesWritable disp = new CoordinatesWritable();
+	private VectorWritable pos  = new VectorWritable();
+	private VectorWritable disp = new VectorWritable();
 	
 	/** 
 	 * Default constructor.
@@ -69,7 +69,7 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Constructor.
 	 */
-	public VertexValueWritable(CoordinatesWritable pos, CoordinatesWritable disp) {
+	public VertexValueWritable(VectorWritable pos, VectorWritable disp) {
 		super();
 		set(pos, disp);
 	}
@@ -95,7 +95,7 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * Return the position of the vertex
 	 * @return a CoordinatesWritable 
 	 */
-	public CoordinatesWritable getPos() {
+	public VectorWritable getPos() {
 		return pos;
 	}
 	
@@ -103,7 +103,7 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * Return the displacement of the vertex
 	 * @return a CoordinatesWritable 
 	 */
-	public CoordinatesWritable getDisp() {
+	public VectorWritable getDisp() {
 		return disp;
 	}
 
@@ -112,7 +112,7 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * @param pos the position. 
 	 * @param disp  the displacement. 
 	 */
-	public void set(CoordinatesWritable pos, CoordinatesWritable disp) {
+	public void set(VectorWritable pos, VectorWritable disp) {
 		this.pos  = pos;
 		this.disp = disp;
 	}

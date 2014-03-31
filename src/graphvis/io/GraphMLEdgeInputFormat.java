@@ -44,7 +44,7 @@
  */
 package graphvis.io;
 
-import graphvis.type.CoordinatesWritable;
+import graphvis.type.VectorWritable;
 import graphvis.type.EdgeValueWritable;
 
 import java.io.IOException;
@@ -65,7 +65,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, EdgeValueWritable> {
+public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable> {
 
 	
 	/**
@@ -79,7 +79,7 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, Edg
 	* @throws IOException
 	*/
 	@Override
-	public EdgeReader<IntWritable, EdgeValueWritable> createEdgeReader(
+	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(
 			InputSplit arg0, TaskAttemptContext arg1) throws IOException {
 		
 		return new GraphMLEdgeReader();
@@ -103,9 +103,9 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, Edg
 		   * @see IntWritable 
 		   */
 		@Override
-		protected IntWritable getSourceVertexId(IntPair endpoints)
+		protected LongWritable getSourceVertexId(IntPair endpoints)
 				throws IOException {
-			return new IntWritable(endpoints.getFirst());
+			return new LongWritable(endpoints.getFirst());
 		}
 
 		
@@ -118,9 +118,9 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, Edg
 		   * @see IntWritable 
 		   */
 		@Override
-		protected IntWritable getTargetVertexId(IntPair endpoints)
+		protected LongWritable getTargetVertexId(IntPair endpoints)
 				throws IOException {
-			return new IntWritable(endpoints.getSecond());
+			return new LongWritable(endpoints.getSecond());
 		}
 
 		/** 
@@ -133,7 +133,7 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, Edg
 		   */
 		@Override
 		protected EdgeValueWritable getValue(IntPair endpoints) throws IOException {
-			return new EdgeValueWritable(new LongWritable(0L), new CoordinatesWritable());
+			return new EdgeValueWritable(new LongWritable(0L), new VectorWritable());
 		}
 
 		/** 
@@ -150,14 +150,7 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<IntWritable, Edg
 			String[] tokens = separator.split(line);
 			return new IntPair(Integer.parseInt(tokens[2].split("[\"]")[1]),
 					Integer.parseInt(tokens[3].split("[\"]")[1]));
-		}
-		
-		
-		
-		
-		
-		
-		
+		}	
 		
 	}
 
