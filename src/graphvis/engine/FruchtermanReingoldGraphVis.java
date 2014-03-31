@@ -63,7 +63,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	private static final double LIMIT = 3.0;
 	
 	private static double k;
-	private static double T = W/10.0;
+	private static double T = W/100.0;
 
 	
 	/**

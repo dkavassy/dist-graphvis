@@ -55,7 +55,7 @@ public class IntegrationTest {
 
 		// A small graph
 		String[] graph = new String[] { "1,2", "1,3", "1,4", "2,3", "2,4",
-				"3,4" };
+				"4,3" };
 
 		GiraphConfiguration conf = new GiraphConfiguration();
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
@@ -105,7 +105,8 @@ public class IntegrationTest {
 
 		// A small graph
 		String[] graph = new String[] { 
-				"edge [ source 2 target 1 ]", 
+				"edge [ source 1 target 2 ]", 
+				"edge [ source 2 target 3 ]", 
 				"edge [ source 3 target 1 ]", 
 				"edge [ source 4 target 1 ]"
 				};
@@ -144,9 +145,9 @@ public class IntegrationTest {
 	        circleCount++;
         }
         //contains 6 edges and 4 vertices
-        assertEquals(3,lineCount);
+        assertEquals(4,lineCount);
         //print circles for each edge and for each vertex, so it's number of edges + number of edges
-        assertEquals(3+4,circleCount);
+        assertEquals(4+4,circleCount);
 	}
 
 	
@@ -158,7 +159,8 @@ public class IntegrationTest {
 
 		// A small graph
 		String[] graph = new String[] { 
-				"<edge id=\""+1+"\" source=\""+2+"\" target=\""+1+"\">", 
+				"<edge id=\""+1+"\" source=\""+1+"\" target=\""+2+"\">", 
+				"<edge id=\""+1+"\" source=\""+2+"\" target=\""+3+"\">", 
 				"<edge id=\""+2+"\" source=\""+3+"\" target=\""+1+"\"/>", 
 				"<edge id=\""+3+"\" source=\""+4+"\" target=\""+1+"\"/>"
 				};
@@ -198,9 +200,9 @@ public class IntegrationTest {
         }
         
         //contains 6 edges and 4 vertices
-        assertEquals(3,lineCount);
+        assertEquals(4,lineCount);
         //print circles for each edge and for each vertex, so it's number of edges + number of edges
-        assertEquals(3+4,circleCount);
+        assertEquals(4+4,circleCount);
 	}
 
 }

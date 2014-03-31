@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ CoordinatesWritableTest.class,
+@SuiteClasses({ VectorWritableTest.class,
 		FruchtermanReingoldGraphVisTest.class, IntegrationTest.class })
 public class AllTests {
 
