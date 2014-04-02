@@ -62,7 +62,7 @@ public class FruchtermanReingoldGraphVisTest {
 		
 		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
 		
-		double tBefore = FruchtermanReingoldGraphVis.getT();
+		double tBefore = computation.getT();
 		
 		MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1),
 						new VertexValueWritable(), false,
@@ -77,7 +77,7 @@ public class FruchtermanReingoldGraphVisTest {
 
 		
 		computation.compute(vertex, new ArrayList<MessageWritable>());
-		double tAfter = FruchtermanReingoldGraphVis.getT();
+		double tAfter = computation.getT();
 		
 		assertTrue(vertex.isHalted());
 		//cool should not be called in superstep0
@@ -280,7 +280,7 @@ public class FruchtermanReingoldGraphVisTest {
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
 		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
-		double tBefore = FruchtermanReingoldGraphVis.getT();
+		double tBefore = computation.getT();
 
 		MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),
 						new VertexValueWritable(), false,
@@ -295,7 +295,7 @@ public class FruchtermanReingoldGraphVisTest {
 
 		
 		computation.compute(vertex, new ArrayList<MessageWritable>());
-		double tAfter = FruchtermanReingoldGraphVis.getT();
+		double tAfter = computation.getT();
 		
 		assertTrue(vertex.isHalted());
 		//cool should be called in superstep6
@@ -314,7 +314,7 @@ public class FruchtermanReingoldGraphVisTest {
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
 		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
-		double tBefore = FruchtermanReingoldGraphVis.getT();
+		double tBefore = computation.getT();
 		
 		MockUtils.MockedEnvironment<LongWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
 				MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),
@@ -329,7 +329,7 @@ public class FruchtermanReingoldGraphVisTest {
 
 		
 		computation.compute(vertex, new ArrayList<MessageWritable>());
-		double tAfter = FruchtermanReingoldGraphVis.getT();
+		double tAfter = computation.getT();
 		
 		assertTrue(vertex.isHalted());
 		//cool should be called in superstep6

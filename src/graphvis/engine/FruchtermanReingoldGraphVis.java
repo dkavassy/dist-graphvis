@@ -37,6 +37,7 @@ import java.util.Random;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 
 /** 
@@ -61,9 +62,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	private static final double SPEED = W/1000.0;
 	//limit the velocity with which a vertex can move away from the center
 	private static final double LIMIT = 3.0;
-	
-	private static double k;
-	private static double T = W/100.0;
+	//Temperature and K are in aggregators. Go and see GraphvisMasterCompute.java.
 
 	
 	/**
@@ -81,10 +80,11 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 		// Super Step 0
 		if (getSuperstep() % SUPERSTEPS == 0) {
 			// Everybody is awake
-			
+			//Get default aggregator values.
+			double T = ((DoubleWritable) getAggregatedValue("T")).get();
+			double k = ((DoubleWritable) getAggregatedValue("k")).get();
 			// Very first superstep: init in random position
 			if (getSuperstep() == 0) {
-				
 				Random random = new Random();
 				VectorWritable pos = new VectorWritable(
 						(random.nextDouble() - 0.5) * 100.0,
@@ -94,13 +94,22 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 				VectorWritable disp             = new VectorWritable(0.0,0.0);
 				VertexValueWritable vertexValue = new VertexValueWritable(pos, disp);
 				vertex.setValue(vertexValue);
-				k = Math.sqrt(AREA / getTotalNumVertices());
+				if (vertex.getId().get() == 1) {
+					
+				//Initialize aggregator values.
+				aggregate("k", new DoubleWritable(-k+Math.sqrt(AREA / getTotalNumVertices())));
+				aggregate("T", new DoubleWritable(-T+W/10));
+				T = W/10;
+				}
 			}else {
 				// If it's not the very first superstep, let's chill!
 				if (vertex.getId().get() == 1) {
-					cool();
+					//cool
+					aggregate("T", new DoubleWritable(-SPEED));
+					T = T - SPEED;
 				}
 			}
+			
 			
 			// If we're not frozen yet, wake everyone up and send own position to everyone for next superstep
 			if (T > 0 || (T < MIN_DIST && T > -MIN_DIST && vertex.getId().get() == 1)) {
@@ -325,6 +334,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 			dispLength = 1;// any number should work, as disp is 0
 		}
 		
+		double k = ((DoubleWritable) getAggregatedValue("k")).get();
 		//gravity
 		double gravity = 10.0;
 		double d       = pos.length();
@@ -350,7 +360,9 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	*/
 	// Linear cooling function
 	private void cool() {
+		double T = ((DoubleWritable) getAggregatedValue("T")).get();
 		T = T - SPEED;
+		aggregate("T", new DoubleWritable(T));
 	}
 
 	
@@ -360,7 +372,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the attractive force
 	*/
 	private double fa(double x) {
-		
+		double k = ((DoubleWritable) getAggregatedValue("k")).get();
 		return x*x / k;
 	}
 
@@ -370,17 +382,23 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the repulsive force
 	*/
 	private double fr(double z) {
-
+		double k = ((DoubleWritable) getAggregatedValue("k")).get();
 		return  k*k / z;
 	}
 	
-	public static double getT() {
+	public double getT() {
+		double T = ((DoubleWritable) getAggregatedValue("T")).get();
 		return T;
 	}
 	
-	public static double getK() {
+	public double getK() {
+		double k = ((DoubleWritable) getAggregatedValue("k")).get();
 		return k;
 	}
+
+
+	
+	
 
 	
 }
