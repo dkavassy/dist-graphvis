@@ -86,10 +86,6 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 		disp.write(out);
 	}
 	
-	@Override
-	public String toString() {
-		return "pos: " + pos;
-	}
 
 	/** 
 	 * Return the position of the vertex

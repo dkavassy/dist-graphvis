@@ -64,8 +64,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	//limit the velocity with which a vertex can move away from the center
 	private static final double LIMIT = 3.0;
 	//Temperature and K are in aggregators. See GraphvisMasterCompute.java.
-	private double T = 1000;
-	private double k = 100000;
+
 	
 	private WorkerAggregatorUsage aggregator = this;
 	
@@ -88,8 +87,8 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 		if (getSuperstep() % SUPERSTEPS == 0) {
 			// Everybody is awake
 			//Get default aggregator values.
-			T = ((DoubleWritable) aggregator.getAggregatedValue("T")).get();
-			k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
+			double T = ((DoubleWritable) aggregator.getAggregatedValue("T")).get();
+			double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 			// Very first superstep: init in random position
 			if (getSuperstep() == 0) {
 				Random random = new Random();
@@ -361,17 +360,6 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 		vertex.setValue(new VertexValueWritable(pos, new VectorWritable(0.0,0.0)));
 	}
 
-	/**
-	* Subtract the temperature by SPEED to cool down the whole environment to 
-	* prevent vertices from moving permanently
-	*/
-	// Linear cooling function
-	private void cool() {
-		double T = ((DoubleWritable) getAggregatedValue("T")).get();
-		T = T - SPEED;
-		aggregate("T", new DoubleWritable(T));
-	}
-
 	
 	/**
 	* The function for calculating attractive force.
@@ -379,7 +367,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the attractive force
 	*/
 	private double fa(double x) {
-		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
+		double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		return x*x / k;
 	}
 
@@ -389,21 +377,14 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the repulsive force
 	*/
 	private double fr(double z) {
-		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
+		double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		return  k*k / z;
 	}
-	
-	public double getT() {
-		double T = ((DoubleWritable) aggregator.getAggregatedValue("T")).get();
-		return T;
-	}
-	
-	public double getK() {
-		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
-		return k;
-	}
 
-
+	/**
+	* Set an aggregator for tests.
+	* @param aggregator the aggregator to set
+	*/
 	public void setAggregator(WorkerAggregatorUsage aggregator) {
 		this.aggregator = aggregator;
 	}

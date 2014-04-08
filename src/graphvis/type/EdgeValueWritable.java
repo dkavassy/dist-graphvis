@@ -89,11 +89,7 @@ implements org.apache.hadoop.io.Writable {
 		targetPos.write(out);
 	}
 	
-	@Override
-	public String toString() {
-		return "edge weight: " + weight + "; target pos: " + targetPos;
-	}
-	
+
 	/** 
 	 * Return the edge weight
 	 * @return a LongWritable 

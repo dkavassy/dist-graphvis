@@ -88,10 +88,6 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 		pos.write(out);
 	}
 	
-	@Override
-	public String toString() {
-		return "srcId: " + srcId + "; pos: " + pos;
-	}
 	
 	/** 
 	 * Return the source id
