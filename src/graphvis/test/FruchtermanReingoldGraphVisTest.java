@@ -34,6 +34,7 @@ import org.apache.giraph.edge.EdgeFactory;
 import org.apache.giraph.graph.DefaultVertex;
 import org.apache.giraph.graph.Vertex;
 import org.apache.giraph.utils.MockUtils;
+import org.apache.giraph.worker.WorkerAggregatorUsage;
 import org.apache.hadoop.io.*;
 import org.junit.Test;
 
@@ -51,7 +52,21 @@ import static org.mockito.Mockito.*;
  * @version 1.1 Initial development. 
  */
 public class FruchtermanReingoldGraphVisTest {
-
+	WorkerAggregatorUsage mockAggregator= new WorkerAggregatorUsage(){
+		
+		@Override
+		public <A extends Writable> A getAggregatedValue(String arg0) {
+			return (A) new DoubleWritable(1000);
+		}
+		
+		@Override
+		public <A extends Writable> void aggregate(String arg0, A arg1) {
+			// TODO Auto-generated method stub
+			
+		}
+	};
+	
+	
 	/**
 	 * Test superstep0
 	 */
@@ -61,8 +76,8 @@ public class FruchtermanReingoldGraphVisTest {
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
-		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
-		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		computation.setAggregator(mockAggregator);
 		MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1),
 						new VertexValueWritable(), false,
 						computation, 0L);
@@ -75,9 +90,9 @@ public class FruchtermanReingoldGraphVisTest {
 
 		computation.compute(vertex, new ArrayList<MessageWritable>());
 		
-		//assertTrue(vertex.isHalted());
+		assertTrue(vertex.isHalted());
 		//cool should not be called in superstep0
-		verify(computation, never()).aggregate("T", new DoubleWritable(-100));
+		//verify(computation, never()).aggregate("T", new DoubleWritable(-100));
 		//random positions should be between -50 and 50
 		assertEquals(0,vertex.getValue().getPos().getX(),50);
 		assertEquals(0,vertex.getValue().getPos().getY(),50);
@@ -98,9 +113,8 @@ public class FruchtermanReingoldGraphVisTest {
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
-		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
-		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
-		when(computation.getAggregatedValue("k")).thenReturn(new DoubleWritable(40000));
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		computation.setAggregator(mockAggregator);
 		
 		MockUtils.MockedEnvironment<LongWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
 				MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),
@@ -117,7 +131,7 @@ public class FruchtermanReingoldGraphVisTest {
 		
 		computation.compute(vertex, messages);
 
-		//assertTrue(vertex.isHalted());
+		assertTrue(vertex.isHalted());
 		env.verifyMessageSent(new LongWritable(2), new MessageWritable(new LongWritable(1),vertex.getValue().getPos()));
 		env.verifyMessageSent(new LongWritable(3), new MessageWritable(new LongWritable(1),vertex.getValue().getPos()));
 	}
@@ -137,9 +151,8 @@ public class FruchtermanReingoldGraphVisTest {
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
-		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
-		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
-		when(computation.getAggregatedValue("k")).thenReturn(new DoubleWritable(4000000));
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		computation.setAggregator(mockAggregator);
 		
 		MockUtils.MockedEnvironment<LongWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
 				MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),
@@ -176,9 +189,8 @@ public class FruchtermanReingoldGraphVisTest {
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
-		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
-		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
-		when(computation.getAggregatedValue("k")).thenReturn(new DoubleWritable(4000000));
+		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		computation.setAggregator(mockAggregator);
 		
 		MockUtils.MockedEnvironment<LongWritable, VertexValueWritable, EdgeValueWritable, MessageWritable> env = 
 				MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),

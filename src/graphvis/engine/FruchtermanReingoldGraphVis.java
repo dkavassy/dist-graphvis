@@ -37,6 +37,7 @@ import java.util.Random;
 import org.apache.giraph.edge.Edge;
 import org.apache.giraph.graph.BasicComputation;
 import org.apache.giraph.graph.Vertex;
+import org.apache.giraph.worker.WorkerAggregatorUsage;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 
@@ -63,8 +64,14 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	//limit the velocity with which a vertex can move away from the center
 	private static final double LIMIT = 3.0;
 	//Temperature and K are in aggregators. See GraphvisMasterCompute.java.
-
+	private double T = 1000;
+	private double k = 100000;
 	
+	private WorkerAggregatorUsage aggregator = this;
+	
+
+
+
 	/**
 	* Apply the FruchtermanReingold algorithm on every vertex. Divided in to 6 supersteps.
 	* @param vertex the vertex to calculate on
@@ -81,8 +88,8 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 		if (getSuperstep() % SUPERSTEPS == 0) {
 			// Everybody is awake
 			//Get default aggregator values.
-			double T = ((DoubleWritable) getAggregatedValue("T")).get();
-			double k = ((DoubleWritable) getAggregatedValue("k")).get();
+			T = ((DoubleWritable) aggregator.getAggregatedValue("T")).get();
+			k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 			// Very first superstep: init in random position
 			if (getSuperstep() == 0) {
 				Random random = new Random();
@@ -97,15 +104,15 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 				if (vertex.getId().get() == 1) {
 					
 				//Initialize aggregator values.
-				aggregate("k", new DoubleWritable(-k+Math.sqrt(AREA / getTotalNumVertices())));
-				aggregate("T", new DoubleWritable(-T+W/10));
+					aggregator.aggregate("k", new DoubleWritable(-k+Math.sqrt(AREA / getTotalNumVertices())));
+					aggregator.aggregate("T", new DoubleWritable(-T+W/10));
 				T = W/10;
 				}
 			}else {
 				// If it's not the very first superstep, let's chill!
 				if (vertex.getId().get() == 1) {
 					//cool
-					aggregate("T", new DoubleWritable(-SPEED));
+					aggregator.aggregate("T", new DoubleWritable(-SPEED));
 					T = T - SPEED;
 				}
 			}
@@ -334,7 +341,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 			dispLength = 1;// any number should work, as disp is 0
 		}
 		
-		double k = ((DoubleWritable) getAggregatedValue("k")).get();
+		double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		//gravity
 		double gravity = 10.0;
 		double d       = pos.length();
@@ -372,7 +379,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the attractive force
 	*/
 	private double fa(double x) {
-		double k = ((DoubleWritable) getAggregatedValue("k")).get();
+		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		return x*x / k;
 	}
 
@@ -382,22 +389,24 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	* @return a double which is the repulsive force
 	*/
 	private double fr(double z) {
-		double k = ((DoubleWritable) getAggregatedValue("k")).get();
+		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		return  k*k / z;
 	}
 	
 	public double getT() {
-		double T = ((DoubleWritable) getAggregatedValue("T")).get();
+		double T = ((DoubleWritable) aggregator.getAggregatedValue("T")).get();
 		return T;
 	}
 	
 	public double getK() {
-		double k = ((DoubleWritable) getAggregatedValue("k")).get();
+		k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
 		return k;
 	}
 
 
-	
+	public void setAggregator(WorkerAggregatorUsage aggregator) {
+		this.aggregator = aggregator;
+	}
 	
 
 	

@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({ VectorWritableTest.class,
-		FruchtermanReingoldGraphVisTest.class, IntegrationTest.class })
+		FruchtermanReingoldGraphVisTest.class, IntegrationTest.class, AggregatorTest.class })
 public class AllTests {
 
 }
