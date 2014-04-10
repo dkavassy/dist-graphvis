@@ -27,9 +27,7 @@ package graphvis.test;
 
 import static org.junit.Assert.*;
 
-import org.apache.giraph.conf.BooleanConfOption;
 import org.apache.giraph.conf.GiraphConfiguration;
-import org.apache.giraph.conf.IntConfOption;
 import org.apache.giraph.utils.InternalVertexRunner;
 import org.junit.Test;
 
@@ -46,19 +44,20 @@ import graphvis.io.SVGVertexOutputFormat;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */
-public class IntegrationTest {
-
+public class IntegrationTest
+{
 	/**
 	 * A local integration test for CSVEdgeInputFormat
 	 */
 	@Test
-	public void testToyDataCSVEdgeInputFormat() throws Exception {
-
+	public void testToyDataCSVEdgeInputFormat() throws Exception
+	{
 		// A small graph
 		String[] graph = new String[] { "1,2", "1,3", "1,4", "2,3", "2,4",
 				"4,3" };
 
 		GiraphConfiguration conf = new GiraphConfiguration();
+		
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(CSVEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
@@ -67,7 +66,7 @@ public class IntegrationTest {
 		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
-		String output="";
+		String output = "";
 		for(String result:results){
 			output+=result;
 		}

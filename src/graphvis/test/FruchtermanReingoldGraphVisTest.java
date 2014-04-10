@@ -54,6 +54,7 @@ import static org.mockito.Mockito.*;
 public class FruchtermanReingoldGraphVisTest {
 	WorkerAggregatorUsage mockAggregator= new WorkerAggregatorUsage(){
 		
+		@SuppressWarnings("unchecked")
 		@Override
 		public <A extends Writable> A getAggregatedValue(String arg0) {
 			return (A) new DoubleWritable(1000);
