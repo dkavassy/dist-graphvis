@@ -60,7 +60,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	//minimum distance between two vertices
 	private static final double MIN_DIST = 0.000001;
 	//amount of temperature goes down after each iteration
-	private static final double SPEED = W/100.0;
+	private static final double SPEED = W/1000.0;
 	//limit the velocity with which a vertex can move away from the center
 	private static final double LIMIT = 3.0;
 	//Temperature and K are in aggregators. See GraphvisMasterCompute.java.
@@ -405,7 +405,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	private double fa(double x) 
 	{
 		double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
-		return x*x / k;
+		return 7000.0*x*x / k;
 	}
 
 	/**
@@ -416,7 +416,7 @@ public class FruchtermanReingoldGraphVis extends BasicComputation<LongWritable, 
 	private double fr(double z) 
 	{
 		double k = ((DoubleWritable) aggregator.getAggregatedValue("k")).get();
-		return  k*k / z;
+		return  2000.0*k*k / z;
 	}
 
 	/**
