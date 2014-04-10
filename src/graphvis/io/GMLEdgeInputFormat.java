@@ -65,8 +65,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable> {
-
+public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable> 
+{
 	
 	/**
 	* Create an edge reader for a given split. The framework will call
@@ -80,7 +80,8 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	*/
 	@Override
 	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
-			throws IOException {
+			throws IOException 
+	{
 		// TODO Auto-generated method stub
 		return new GMLEdgeReader();
 	}
@@ -88,7 +89,8 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	/**
 	* Edge reader associated with {@link GMLEdgeInputFormat}.
 	*/
-	public class GMLEdgeReader extends TextEdgeReaderFromEachLineProcessed<IntPair> {
+	public class GMLEdgeReader extends TextEdgeReaderFromEachLineProcessed<IntPair>
+	{
 		
 		private final Pattern separator = Pattern.compile("[\\s]");
 		
@@ -102,7 +104,8 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   */
 		@Override
 		protected LongWritable getSourceVertexId(IntPair endpoints)
-				throws IOException {
+				throws IOException 
+		{
 			return new LongWritable(endpoints.getFirst());
 		}
 
@@ -116,7 +119,9 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   */
 		@Override
 		protected LongWritable getTargetVertexId(IntPair endpoints)
-				throws IOException {
+				throws IOException 
+		{
+			
 			return new LongWritable(endpoints.getSecond());
 		}
 
@@ -129,7 +134,10 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   * @see EdgeValueWritable 
 		   */
 		@Override
-		protected EdgeValueWritable getValue(IntPair arg0) throws IOException {
+		protected EdgeValueWritable getValue(IntPair arg0) 
+				throws IOException 
+		{
+			
 			return new EdgeValueWritable(new LongWritable(0L), new VectorWritable());
 		}
 
@@ -142,9 +150,11 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   * @see GMLEdgeInputFormat 
 		   */
 		@Override
-		protected IntPair preprocessLine(Text text) throws IOException {
+		protected IntPair preprocessLine(Text text) 
+				throws IOException 
+		{
 
-			String line = text.toString().split("[\\[\\]]")[1].trim();
+			String line     = text.toString().split("[\\[\\]]")[1].trim();
 			String[] tokens = separator.split(line);
 			return new IntPair(Integer.parseInt(tokens[1]), Integer.parseInt(tokens[3]));
 

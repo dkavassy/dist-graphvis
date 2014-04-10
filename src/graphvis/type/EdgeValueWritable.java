@@ -57,7 +57,8 @@ import org.apache.hadoop.io.LongWritable;
  * @version 1.1 Initial development. 
  */ 
 public class EdgeValueWritable 
-implements org.apache.hadoop.io.Writable {
+implements org.apache.hadoop.io.Writable 
+{
 	
 	private LongWritable           weight = new LongWritable();
 	private VectorWritable targetPos = new VectorWritable();
@@ -65,26 +66,30 @@ implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Default constructor.
 	 */
-	public EdgeValueWritable() {
+	public EdgeValueWritable() 
+	{
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public EdgeValueWritable(LongWritable edgeValue, VectorWritable targetValue) {
+	public EdgeValueWritable(LongWritable edgeValue, VectorWritable targetValue) 
+	{
 		super();
 		set(edgeValue, targetValue);
 	}
 
 	@Override
-	public void readFields(DataInput in) throws IOException {
+	public void readFields(DataInput in) throws IOException 
+	{
 		weight.readFields(in);
 		targetPos.readFields(in);
 	}
 
 	@Override
-	public void write(DataOutput out) throws IOException {
+	public void write(DataOutput out) throws IOException 
+	{
 		weight.write(out);
 		targetPos.write(out);
 	}
@@ -94,7 +99,8 @@ implements org.apache.hadoop.io.Writable {
 	 * Return the edge weight
 	 * @return a LongWritable 
 	 */
-	public LongWritable getWeight() {
+	public LongWritable getWeight() 
+	{
 		return weight;
 	}
 
@@ -102,7 +108,8 @@ implements org.apache.hadoop.io.Writable {
 	 * Return the target position
 	 * @return a CoordinatesWritable 
 	 */
-	public VectorWritable getTargetPos() {
+	public VectorWritable getTargetPos() 
+	{
 		return targetPos;
 	}
 
@@ -111,7 +118,8 @@ implements org.apache.hadoop.io.Writable {
 	 * @param edgeValue the edge weight. 
 	 * @param targetPos  the target vertex position. 
 	 */
-	public void set(LongWritable edgeValue, VectorWritable targetPos) {
+	public void set(LongWritable edgeValue, VectorWritable targetPos) 
+	{
 		this.weight  = edgeValue;
 		this.targetPos  = targetPos;
 	}

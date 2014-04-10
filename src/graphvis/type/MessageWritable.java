@@ -56,7 +56,8 @@ import org.apache.hadoop.io.LongWritable;
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class MessageWritable implements org.apache.hadoop.io.Writable {
+public class MessageWritable implements org.apache.hadoop.io.Writable 
+{
 	
 	private LongWritable srcId = new LongWritable();
 	private VectorWritable pos = new VectorWritable();
@@ -64,26 +65,30 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Default constructor.
 	 */
-	public MessageWritable() {
+	public MessageWritable() 
+	{
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public MessageWritable(LongWritable srcId, VectorWritable pos) {
+	public MessageWritable(LongWritable srcId, VectorWritable pos) 
+	{
 		super();
 		set(srcId, pos);
 	}
 
 	@Override
-	public void readFields(DataInput in) throws IOException {
+	public void readFields(DataInput in) throws IOException 
+	{
 		srcId.readFields(in);
 		pos.readFields(in);
 	}
 
 	@Override
-	public void write(DataOutput out) throws IOException {
+	public void write(DataOutput out) throws IOException 
+	{
 		srcId.write(out);
 		pos.write(out);
 	}
@@ -93,7 +98,8 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * Return the source id
 	 * @return a IntWritable 
 	 */
-	public LongWritable getSrcId() {
+	public LongWritable getSrcId() 
+	{
 		return srcId;
 	}
 	
@@ -101,7 +107,8 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * Return the vector of coordinates
 	 * @return a CoordinatesWritable 
 	 */
-	public VectorWritable getPos() {
+	public VectorWritable getPos() 
+	{
 		return pos;
 	}
 
@@ -110,7 +117,8 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * @param srcId the source id. 
 	 * @param pos the vector. 
 	 */
-	public void set(LongWritable srcId, VectorWritable pos) {
+	public void set(LongWritable srcId, VectorWritable pos) 
+	{
 		this.srcId = srcId;
 		this.pos   = pos;
 	}
@@ -123,10 +131,15 @@ public class MessageWritable implements org.apache.hadoop.io.Writable {
 	 * @see MessageWritable 
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj) 
+	{
 		MessageWritable other = (MessageWritable)  obj;
-		if(other.getSrcId().equals(srcId)){
-			if(other.getPos().equals(pos)){
+		
+		if(other.getSrcId().equals(srcId))
+		{
+			
+			if(other.getPos().equals(pos))
+			{
 				return true;
 			}
 		}

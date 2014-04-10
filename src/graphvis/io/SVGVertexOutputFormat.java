@@ -46,7 +46,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
 */
 public class SVGVertexOutputFormat
 		extends
-		TextVertexOutputFormat<LongWritable, VertexValueWritable, EdgeValueWritable> {
+		TextVertexOutputFormat<LongWritable, VertexValueWritable, EdgeValueWritable> 
+{
 
 	/** Specify the output delimiter */
 	public static final String LINE_TOKENIZE_VALUE = "output.delimiter";
@@ -57,11 +58,13 @@ public class SVGVertexOutputFormat
 
 	@Override
 	public SVGVertexWriter createVertexWriter(TaskAttemptContext arg0)
-			throws IOException, InterruptedException {
+			throws IOException, InterruptedException 
+	{
 		return new SVGVertexWriter();
 	}
 
-	protected class SVGVertexWriter extends TextVertexWriterToEachLine {
+	protected class SVGVertexWriter extends TextVertexWriterToEachLine 
+	{
 		/** Saved delimiter */
 		private String delimiter;
 
@@ -69,7 +72,9 @@ public class SVGVertexOutputFormat
 
 		@Override
 		public void initialize(TaskAttemptContext context) throws IOException,
-				InterruptedException {
+				InterruptedException 
+		{
+			
 			super.initialize(context);
 			delimiter = getConf().get(LINE_TOKENIZE_VALUE,
 					LINE_TOKENIZE_VALUE_DEFAULT);
@@ -78,7 +83,9 @@ public class SVGVertexOutputFormat
 		@Override
 		protected Text convertVertexToLine(
 				Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex)
-				throws IOException {
+				throws IOException 
+		{
+			
 			long x = (long) (vertex.getValue().getPos().getX() + W / 2);
 			long y = (long) (vertex.getValue().getPos().getY() + L / 2);
 
@@ -87,7 +94,8 @@ public class SVGVertexOutputFormat
 			str.append(delimiter);
 
 			// Create input svg style.
-			for (Edge<LongWritable, EdgeValueWritable> edge : vertex.getEdges()) {
+			for (Edge<LongWritable, EdgeValueWritable> edge : vertex.getEdges()) 
+			{
 
 				long x2 = (long) ((edge.getValue()).getTargetPos().getX() + W / 2);
 				long y2 = (long) ((edge.getValue()).getTargetPos().getY() + L / 2);

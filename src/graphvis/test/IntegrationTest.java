@@ -67,7 +67,9 @@ public class IntegrationTest
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output = "";
-		for(String result:results){
+		
+		for(String result:results)
+		{
 			output+=result;
 		}
 		System.out.println(output);
@@ -101,28 +103,35 @@ public class IntegrationTest
 	 * A local integration test for GMLEdgeInputFormat
 	 */
 	@Test
-	public void testToyDataGMLEdgeInputFormat() throws Exception {
+	public void testToyDataGMLEdgeInputFormat() throws Exception 
+	{
 
 		// A small graph
-		String[] graph = new String[] { 
+		String[] graph = new String[] 
+		{ 
 				"edge [ source 1 target 2 ]", 
 				"edge [ source 2 target 3 ]", 
 				"edge [ source 3 target 1 ]", 
 				"edge [ source 4 target 1 ]"
-				};
+		};
 
 		GiraphConfiguration conf = new GiraphConfiguration();
+		
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GMLEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
 		conf.setMaxNumberOfSupersteps(10000);
 		conf.setMasterComputeClass(GraphvisMasterCompute.class);
+		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output="";
-		for(String result:results){
+		
+		for(String result:results)
+		{
 			output+=result;
 		}
+		
 		System.out.println(output);
         //count lines and circles in output
         int lineCount = 0;
@@ -130,6 +139,7 @@ public class IntegrationTest
         String l = "line";
         String c = "circle";
         int result = output.indexOf(l);
+        
         while(result !=-1)
         {
 	        result = output.indexOf(l,result+1);
@@ -138,6 +148,7 @@ public class IntegrationTest
         }
         
         result = output.indexOf(c);
+        
         while(result !=-1)
         {
 	        result = output.indexOf(c,result+1);
@@ -155,15 +166,17 @@ public class IntegrationTest
 	 * A local integration test for GraphMLEdgeInputFormat
 	 */
 	@Test
-	public void testToyDataGraphMLEdgeInputFormat() throws Exception {
+	public void testToyDataGraphMLEdgeInputFormat() throws Exception 
+	{
 
 		// A small graph
-		String[] graph = new String[] { 
+		String[] graph = new String[] 
+		{ 
 				"<edge id=\""+1+"\" source=\""+1+"\" target=\""+2+"\">", 
 				"<edge id=\""+1+"\" source=\""+2+"\" target=\""+3+"\">", 
 				"<edge id=\""+2+"\" source=\""+3+"\" target=\""+1+"\"/>", 
 				"<edge id=\""+3+"\" source=\""+4+"\" target=\""+1+"\"/>"
-				};
+		};
 
 		GiraphConfiguration conf = new GiraphConfiguration();
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
@@ -174,9 +187,12 @@ public class IntegrationTest
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
 		String output="";
-		for(String result:results){
+		
+		for(String result:results)
+		{
 			output+=result;
 		}
+		
 		System.out.println(output);
         //count lines and circles in output
         int lineCount = 0;
@@ -184,6 +200,7 @@ public class IntegrationTest
         String l = "line";
         String c = "circle";
         int result = output.indexOf(l);
+        
         while(result !=-1)
         {
 	        result = output.indexOf(l,result+1);
@@ -192,6 +209,7 @@ public class IntegrationTest
         }
         
         result = output.indexOf(c);
+        
         while(result !=-1)
         {
 	        result = output.indexOf(c,result+1);

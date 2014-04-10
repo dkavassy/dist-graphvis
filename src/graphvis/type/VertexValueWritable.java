@@ -54,7 +54,8 @@ import java.io.IOException;
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
  */ 
-public class VertexValueWritable implements org.apache.hadoop.io.Writable {
+public class VertexValueWritable implements org.apache.hadoop.io.Writable
+{
 	
 	private VectorWritable pos  = new VectorWritable();
 	private VectorWritable disp = new VectorWritable();
@@ -62,26 +63,30 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	/** 
 	 * Default constructor.
 	 */
-	public VertexValueWritable() {
+	public VertexValueWritable()
+	{
 		super();
 	}
 	
 	/** 
 	 * Constructor.
 	 */
-	public VertexValueWritable(VectorWritable pos, VectorWritable disp) {
+	public VertexValueWritable(VectorWritable pos, VectorWritable disp)
+	{
 		super();
 		set(pos, disp);
 	}
 
 	@Override
-	public void readFields(DataInput in) throws IOException {
+	public void readFields(DataInput in) throws IOException 
+	{
 		pos.readFields(in);
 		disp.readFields(in);
 	}
 
 	@Override
-	public void write(DataOutput out) throws IOException {
+	public void write(DataOutput out) throws IOException 
+	{
 		pos.write(out);
 		disp.write(out);
 	}
@@ -91,7 +96,8 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * Return the position of the vertex
 	 * @return a CoordinatesWritable 
 	 */
-	public VectorWritable getPos() {
+	public VectorWritable getPos() 
+	{
 		return pos;
 	}
 	
@@ -99,7 +105,8 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * Return the displacement of the vertex
 	 * @return a CoordinatesWritable 
 	 */
-	public VectorWritable getDisp() {
+	public VectorWritable getDisp() 
+	{
 		return disp;
 	}
 
@@ -108,7 +115,8 @@ public class VertexValueWritable implements org.apache.hadoop.io.Writable {
 	 * @param pos the position. 
 	 * @param disp  the displacement. 
 	 */
-	public void set(VectorWritable pos, VectorWritable disp) {
+	public void set(VectorWritable pos, VectorWritable disp) 
+	{
 		this.pos  = pos;
 		this.disp = disp;
 	}

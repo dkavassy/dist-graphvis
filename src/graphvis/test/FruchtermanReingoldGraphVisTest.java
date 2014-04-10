@@ -51,17 +51,21 @@ import static org.mockito.Mockito.*;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */
-public class FruchtermanReingoldGraphVisTest {
-	WorkerAggregatorUsage mockAggregator= new WorkerAggregatorUsage(){
+public class FruchtermanReingoldGraphVisTest
+{
+	WorkerAggregatorUsage mockAggregator= new WorkerAggregatorUsage()
+	{
 		
 		@SuppressWarnings("unchecked")
 		@Override
-		public <A extends Writable> A getAggregatedValue(String arg0) {
+		public <A extends Writable> A getAggregatedValue(String arg0) 
+		{
 			return (A) new DoubleWritable(1000);
 		}
 		
 		@Override
-		public <A extends Writable> void aggregate(String arg0, A arg1) {
+		public <A extends Writable> void aggregate(String arg0, A arg1) 
+		{
 			// TODO Auto-generated method stub
 			
 		}
@@ -72,13 +76,16 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test superstep0
 	 */
 	@Test
-	public void testSuperstep0() throws Exception {
+	public void testSuperstep0() throws Exception
+	{
 	
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
 		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
+		
 		computation.setAggregator(mockAggregator);
+		
 		MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1),
 						new VertexValueWritable(), false,
 						computation, 0L);
@@ -104,7 +111,9 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test the messages after finishes superstep1
 	 */
 	@Test
-	public void testSuperstep1() throws Exception {
+	public void testSuperstep1() throws Exception 
+	{
+		
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		
@@ -142,7 +151,9 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test the messages after finishes superstep2
 	 */
 	@Test
-	public void testSuperstep2() throws Exception {
+	public void testSuperstep2() throws Exception 
+	{
+		
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		
@@ -161,6 +172,7 @@ public class FruchtermanReingoldGraphVisTest {
 						computation, 2L);
 		
 		vertex.setValue(new VertexValueWritable(new VectorWritable(10,20),new VectorWritable(0,0)));
+		
 		vertex.addEdge(EdgeFactory.create(new LongWritable(2L),
 				new EdgeValueWritable()));
 		
@@ -180,7 +192,8 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test the messages after finishes superstep3
 	 */
 	@Test
-	public void testSuperstep3() throws Exception {
+	public void testSuperstep3() throws Exception
+	{
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		
@@ -220,7 +233,9 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test the messages after finishes superstep4
 	 */
 	@Test
-	public void testSuperstep4() throws Exception {
+	public void testSuperstep4() throws Exception 
+	{
+		
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		
@@ -237,6 +252,7 @@ public class FruchtermanReingoldGraphVisTest {
 						computation, 4L);
 		
 		vertex.setValue(new VertexValueWritable(new VectorWritable(10,20),new VectorWritable(0,0)));
+		
 		vertex.addEdge(EdgeFactory.create(new LongWritable(2L),
 				new EdgeValueWritable()));
 		vertex.addEdge(EdgeFactory.create(new LongWritable(3L),
@@ -256,7 +272,9 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test superstep5
 	 */
 	@Test
-	public void testSuperstep5() throws Exception {
+	public void testSuperstep5() throws Exception 
+	{
+		
 		//messages: positions of other vertices
 		ArrayList<MessageWritable> messages = new ArrayList<MessageWritable>();
 		
@@ -265,6 +283,7 @@ public class FruchtermanReingoldGraphVisTest {
 		
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
+		
 		FruchtermanReingoldGraphVis computation = new FruchtermanReingoldGraphVis();
 		
 		MockUtils.prepareVertexAndComputation(vertex, new LongWritable(1L),
@@ -290,12 +309,14 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test superstep6
 	 */
 	@Test
-	public void testSuperstep6() throws Exception {
+	public void testSuperstep6() throws Exception 
+	{
 	
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
 		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
+		
 		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
 		when(computation.getAggregatedValue("k")).thenReturn(new DoubleWritable(4000000));
 		
@@ -327,12 +348,14 @@ public class FruchtermanReingoldGraphVisTest {
 	 * Test superstep606
 	 */
 	@Test
-	public void testSuperstep606() throws Exception {
+	public void testSuperstep606() throws Exception 
+	{
 	
 		Vertex<LongWritable, VertexValueWritable, EdgeValueWritable> vertex = 
 				new DefaultVertex<LongWritable, VertexValueWritable, EdgeValueWritable>();
 		
 		FruchtermanReingoldGraphVis computation = mock(FruchtermanReingoldGraphVis.class);
+		
 		when(computation.getAggregatedValue("T")).thenReturn(new DoubleWritable(1000));
 		when(computation.getAggregatedValue("k")).thenReturn(new DoubleWritable(4000000));
 		
@@ -344,6 +367,7 @@ public class FruchtermanReingoldGraphVisTest {
 						computation, 606L);
 		
 		vertex.setValue(new VertexValueWritable());
+		
 		vertex.addEdge(EdgeFactory.create(new LongWritable(2L),
 				new EdgeValueWritable()));
 		vertex.addEdge(EdgeFactory.create(new LongWritable(3L),

@@ -37,12 +37,14 @@ import java.io.IOException;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class VectorWritable implements org.apache.hadoop.io.Writable {
+public class VectorWritable implements org.apache.hadoop.io.Writable 
+{
 	
 	private double x = 0.0;
 	private double y = 0.0;
 	
-	public VectorWritable() {
+	public VectorWritable() 
+	{
 		super();
 	}
 	
@@ -52,7 +54,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @param y the y axis value.
 	 * @see VectorWritable 
 	 */
-	public VectorWritable(double x, double y) {
+	public VectorWritable(double x, double y) 
+	{
 		super();
 		set(x, y);
 	}
@@ -62,26 +65,30 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @param x the x axis value. 
 	 * @param y the y axis value. 
 	 */
-	public void set(double x2, double y2) {
+	public void set(double x2, double y2) 
+	{
 		this.x = x2;
 		this.y = y2;
 	}
 
 	
 	@Override
-	public void readFields(DataInput in) throws IOException {
+	public void readFields(DataInput in) throws IOException 
+	{
 		x = in.readDouble();
 		y = in.readDouble();
 	}
 
 	@Override
-	public void write(DataOutput out) throws IOException {
+	public void write(DataOutput out) throws IOException 
+	{
 		out.writeDouble(x);
 		out.writeDouble(y);
 	}
 
 	@Override
-	public String toString() {
+	public String toString() 
+	{
 		return "x: " + x + "; y: " + y;
 	}
 	
@@ -89,7 +96,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * Return x
 	 * @return a double 
 	 */
-	public double getX() {
+	public double getX() 
+	{
 		return x;
 	}
 	
@@ -97,7 +105,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * Return y
 	 * @return a double 
 	 */
-	public double getY() {
+	public double getY() 
+	{
 		return y;
 	}
 
@@ -106,7 +115,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @return a double which is the length of this vector. 
 	 * @see VectorWritable 
 	 */
-	public double length() {
+	public double length() 
+	{
 		return Math.sqrt(x * x + y * y);
 	}
 
@@ -116,7 +126,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @return a new CoordinatesWritable. 
 	 * @see VectorWritable 
 	 */
-	public VectorWritable add(VectorWritable other) {
+	public VectorWritable add(VectorWritable other)
+	{
 		return new VectorWritable(getX() + other.getX(), getY()
 				+ other.getY());
 	}
@@ -127,12 +138,14 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @return a new CoordinatesWritable. 
 	 * @see VectorWritable 
 	 */
-	public VectorWritable subtract(VectorWritable other) {
+	public VectorWritable subtract(VectorWritable other) 
+	{
 		return new VectorWritable(getX() - other.getX(), getY()
 				- other.getY());
 	}
 
-	public VectorWritable multiply(double scalar) {
+	public VectorWritable multiply(double scalar)
+	{
 		return new VectorWritable(getX() * scalar, getY() * scalar);
 	}
 
@@ -142,12 +155,13 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @return a new CoordinatesWritable. 
 	 * @see VectorWritable 
 	 */
-	public VectorWritable multiply(VectorWritable other) {
-		return new VectorWritable(getX() * other.getX(), getY()
-				* other.getY());
+	public VectorWritable multiply(VectorWritable other) 
+	{
+		return new VectorWritable(getX() * other.getX(), getY() * other.getY());
 	}
 	
-	public VectorWritable divide(double scalar) {
+	public VectorWritable divide(double scalar)
+	{
 		return new VectorWritable(getX() / scalar, getY() / scalar);
 	}
 	 
@@ -158,7 +172,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @return a new CoordinatesWritable. 
 	 * @see VectorWritable 
 	 */
-	public VectorWritable min(double t) {
+	public VectorWritable min(double t)
+	{
 		return new VectorWritable(Math.min(getX(), t), Math.min(getY(), t));
 	}
 
@@ -169,9 +184,12 @@ public class VectorWritable implements org.apache.hadoop.io.Writable {
 	 * @see VectorWritable 
 	 */
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(Object obj) 
+	{
 		VectorWritable other = (VectorWritable) obj;
-		if (other.getX() == x && other.getY() == y) {
+		
+		if (other.getX() == x && other.getY() == y) 
+		{
 			return true;
 		}
 

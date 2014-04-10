@@ -64,8 +64,8 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable>{
-
+public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeValueWritable>
+{
 	
 	/**
 	* Create an edge reader for a given split. The framework will call
@@ -79,7 +79,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	*/
 	@Override
 	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
-			throws IOException {
+			throws IOException 
+	{
 		return new CSVEdgeReader();
 	}
 
@@ -87,7 +88,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	/**
 	* Edge reader associated with {@link CSVEdgeInputFormat}.
 	*/
-	  public class CSVEdgeReader extends TextEdgeReaderFromEachLineProcessed<IntPair> {
+	  public class CSVEdgeReader extends TextEdgeReaderFromEachLineProcessed<IntPair> 
+	  {
 		  
 		  private final Pattern separator = Pattern.compile("[,]");
 		
@@ -101,9 +103,13 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	   */
 	    @Override
 	    protected IntPair preprocessLine(Text line) 
-	    		throws IOException {
+	    		throws IOException 
+	    {
+	    	
 	      String[] tokens = separator.split(line.toString());
+	      
 	      return new IntPair(Integer.valueOf(tokens[0]),
+	    		  
 	          Integer.valueOf(tokens[1]));
 	    }
 
@@ -117,7 +123,9 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   */
 	    @Override
 	    protected LongWritable getSourceVertexId(IntPair endpoints)
-	      throws IOException {
+	    		throws IOException 
+	    {
+	    	
 	      return new LongWritable(endpoints.getFirst());
 	    }
 
@@ -131,7 +139,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   */
 	    @Override
 	    protected LongWritable getTargetVertexId(IntPair endpoints)
-	    		throws IOException {
+	    		throws IOException 
+	    {
 	      return new LongWritable(endpoints.getSecond());
 	    }
 
@@ -145,7 +154,8 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   */
 	    @Override
 	    protected EdgeValueWritable getValue(IntPair endpoints) 
-	    		throws IOException {
+	    		throws IOException 
+	    {
 	      return new EdgeValueWritable(new LongWritable(0L), new VectorWritable());
 	    }
 	  }

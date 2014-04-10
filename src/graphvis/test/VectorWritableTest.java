@@ -38,7 +38,8 @@ import graphvis.type.VectorWritable;
  * @author Shan Huang 
  * @version 1.1 Initial development. 
  */ 
-public class VectorWritableTest {
+public class VectorWritableTest 
+{
 	
 	VectorWritable c = new VectorWritable(12.0,34.0);;
 	
@@ -47,7 +48,8 @@ public class VectorWritableTest {
 	 * Test toString() method
 	 */
 	@Test
-	public void testToString() {
+	public void testToString() 
+	{
 		
 		assertEquals("x: 12.0; y: 34.0",c.toString());
 	}
@@ -57,7 +59,8 @@ public class VectorWritableTest {
 	 * result should be the length of this example
 	 */
 	@Test
-	public void testLength() {
+	public void testLength() 
+	{
 		
 		assertEquals(Math.sqrt(12.0*12.0+34.0*34.0),c.length(),0);
 	}
@@ -68,8 +71,10 @@ public class VectorWritableTest {
 	 * the sum of x and y of two given CoordinatesWritables
 	 */
 	@Test
-	public void testAdd() {
+	public void testAdd() 
+	{
 		VectorWritable other = new VectorWritable(45.0,78.0);
+		
 		assertEquals(12.0+45.0,c.add(other).getX(),0);
 		assertEquals(34.0+78.0,c.add(other).getY(),0);
 	}
@@ -80,8 +85,10 @@ public class VectorWritableTest {
 	 * the result of subtracting x and y of the  given CoordinatesWritables
 	 */
 	@Test
-	public void testSubtract() {
+	public void testSubtract() 
+	{
 		VectorWritable other = new VectorWritable(45.0,78.0);
+		
 		assertEquals(12.0-45.0,c.subtract(other).getX(),0);
 		assertEquals(34.0-78.0,c.subtract(other).getY(),0);
 	}
@@ -92,8 +99,10 @@ public class VectorWritableTest {
 	 * the result of multiplying x and y of the given CoordinatesWritable to the given double
 	 */
 	@Test
-	public void testMultiplyDouble() {
+	public void testMultiplyDouble() 
+	{
 		double scalar = 39.7;
+		
 		assertEquals(12.0*39.7,c.multiply(scalar).getX(),0);
 		assertEquals(34.0*39.7,c.multiply(scalar).getY(),0);
 	}
@@ -104,8 +113,10 @@ public class VectorWritableTest {
 	 * the result of multiplying x and y of the two given CoordinatesWritables
 	 */
 	@Test
-	public void testMultiplyVertexWritable() {
+	public void testMultiplyVertexWritable() 
+	{
 		VectorWritable other = new VectorWritable(45.0,78.0);
+		
 		assertEquals(12.0*45.0,c.multiply(other).getX(),0);
 		assertEquals(34.0*78.0,c.multiply(other).getY(),0);
 	}
@@ -116,8 +127,10 @@ public class VectorWritableTest {
 	 * the result of dividing x and y of the given CoordinatesWritable with the given double
 	 */
 	@Test
-	public void testDivide() {
+	public void testDivide() 
+	{
 		double scalar = 39.7;
+		
 		assertEquals(12.0/39.7,c.divide(scalar).getX(),0);
 		assertEquals(34.0/39.7,c.divide(scalar).getY(),0);
 	}
@@ -127,8 +140,10 @@ public class VectorWritableTest {
 	 * new CoordinatesWritable whose x and y are the minor ones.
 	 */
 	@Test
-	public void testMin() {
+	public void testMin() 
+	{
 		double t = 30.7;
+		
 		assertEquals(12.0,c.min(t).getX(),0);
 		assertEquals(30.7,c.min(t).getY(),0);
 	}
@@ -138,7 +153,8 @@ public class VectorWritableTest {
 	 * Two CoordinatesWritables are the same only when their x and y are all the same
 	 */
 	@Test
-	public void testEqualsObject() {
+	public void testEqualsObject() 
+	{
 		VectorWritable other1 = new VectorWritable(12.0,34.0);
 		VectorWritable other2 = new VectorWritable(12.0,13.0);
 		VectorWritable other3 = new VectorWritable(13.0,34.0);
