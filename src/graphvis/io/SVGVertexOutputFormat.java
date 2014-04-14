@@ -54,7 +54,7 @@ public class SVGVertexOutputFormat
 	/** Default output delimiter */
 	public static final String LINE_TOKENIZE_VALUE_DEFAULT = "\t";
 
-	public static final double W = 6000.0, L = 6000.0;
+	public static final double W = 0.0, L = 0.0;
 
 	@Override
 	public SVGVertexWriter createVertexWriter(TaskAttemptContext arg0)
