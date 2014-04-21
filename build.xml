@@ -5,7 +5,7 @@
   </description>
 
   <!-- Change this if your hadoop installation directory is different -->
-  <property name="hadoop.lib" location="/usr/local/hadoop/share/hadoop"/>
+  <property name="hadoop" location="/usr/local/hadoop"/>
   <!-- Giraph JARs need to be in the lib/ directory, alternatively, change this -->
   <property name="giraph.lib" location="./lib"/>
 
@@ -15,7 +15,7 @@
   <property name="test"  location="report"/>
 
   <path id="build.classpath">
-    <fileset dir="${hadoop.lib}">
+    <fileset dir="${hadoop}/share/hadoop">
       <include name="**/*.jar" />
     </fileset>
     <fileset dir="${giraph.lib}">
@@ -47,7 +47,7 @@
       <classpath refid="build.classpath"/>
       <classpath>
         <pathelement location="${build}"/>
-        <pathelement path="${hadoop.lib}/common/lib/junit-4.8.2.jar"/>
+        <pathelement path="${hadoop.lib}/share/hadoop/common/lib/junit-4.8.2.jar"/>
       </classpath>
       <formatter type="plain"/>
       <test name="graphvis.test.AllTests" todir="${test.report}"/>
