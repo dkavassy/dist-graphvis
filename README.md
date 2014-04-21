@@ -3,8 +3,10 @@ dist-graphvis
 
 Distributed graph visualisation on top of Hadoop/Giraph
 
-To build this project, you should have all the hadoop & giraph libraries in your build path.
+To compile
 
-To compile the project use
+1. Make sure Hadoop's path is correctly set in build.xml
+
+2. To compile the project use
 
     ant dist
