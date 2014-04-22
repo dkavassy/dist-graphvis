@@ -43,7 +43,7 @@
   <target name="test" depends="compile">
     <mkdir dir="${test}"/>
 
-    <junit printsummary="yes" fork="yes" haltonfailure="yes">
+    <junit printsummary="yes" fork="no" haltonfailure="yes">
       <classpath refid="build.classpath"/>
       <classpath>
         <pathelement location="${build}"/>
