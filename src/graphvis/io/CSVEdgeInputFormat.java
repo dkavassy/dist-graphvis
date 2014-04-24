@@ -78,7 +78,7 @@ public class CSVEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	* @throws IOException
 	*/
 	@Override
-	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
+	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit split, TaskAttemptContext context) 
 			throws IOException 
 	{
 		return new CSVEdgeReader();

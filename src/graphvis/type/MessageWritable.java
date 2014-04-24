@@ -131,9 +131,9 @@ public class MessageWritable implements org.apache.hadoop.io.Writable
 	 * @see MessageWritable 
 	 */
 	@Override
-	public boolean equals(Object obj) 
+	public boolean equals(Object another) 
 	{
-		MessageWritable other = (MessageWritable)  obj;
+		MessageWritable other = (MessageWritable)  another;
 		
 		if(other.getSrcId().equals(srcId))
 		{

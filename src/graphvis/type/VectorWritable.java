@@ -62,8 +62,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable
 
 	/** 
 	 * Set new coordinates value.
-	 * @param x the x axis value. 
-	 * @param y the y axis value. 
+	 * @param x2 the x axis value. 
+	 * @param y2 the y axis value. 
 	 */
 	public void set(double x2, double y2) 
 	{
@@ -167,8 +167,8 @@ public class VectorWritable implements org.apache.hadoop.io.Writable
 	 
 	/** 
 	 * Calculate the minor one between this vector and a number. 
-	 * Respectively compare x and y to the parameter and take the minor one.
-	 * @param a double that will be compared with this vector. 
+	 * Respectively compare x and y to t and take the minor one.
+	 * @param t a double that will be compared with this vector. 
 	 * @return a new CoordinatesWritable. 
 	 * @see VectorWritable 
 	 */
@@ -184,9 +184,9 @@ public class VectorWritable implements org.apache.hadoop.io.Writable
 	 * @see VectorWritable 
 	 */
 	@Override
-	public boolean equals(Object obj) 
+	public boolean equals(Object another) 
 	{
-		VectorWritable other = (VectorWritable) obj;
+		VectorWritable other = (VectorWritable) another;
 		
 		if (other.getX() == x && other.getY() == y) 
 		{

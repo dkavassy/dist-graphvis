@@ -79,10 +79,9 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 	* @throws IOException
 	*/
 	@Override
-	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit arg0, TaskAttemptContext arg1) 
+	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader(InputSplit split, TaskAttemptContext context) 
 			throws IOException 
 	{
-		// TODO Auto-generated method stub
 		return new GMLEdgeReader();
 	}
 
@@ -134,7 +133,7 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 		   * @see EdgeValueWritable 
 		   */
 		@Override
-		protected EdgeValueWritable getValue(IntPair arg0) 
+		protected EdgeValueWritable getValue(IntPair endpoints) 
 				throws IOException 
 		{
 			
@@ -143,7 +142,7 @@ public class GMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, EdgeVa
 
 		/** 
 		   * Read a record of hadoop, and then separate source id and target id from it.
-		   * @param line the record of hadoop. 
+		   * @param text the record of hadoop. 
 		   * @return a new IntPair. 
 		   * @exception IOException.
 		   * @see IntPair 

@@ -81,8 +81,7 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, Ed
 	*/
 	@Override
 	public EdgeReader<LongWritable, EdgeValueWritable> createEdgeReader
-	(
-			InputSplit arg0, TaskAttemptContext arg1) throws IOException {
+	(InputSplit split, TaskAttemptContext context) throws IOException {
 		
 		return new GraphMLEdgeReader();
 	}
@@ -147,7 +146,7 @@ public class GraphMLEdgeInputFormat extends TextEdgeInputFormat<LongWritable, Ed
 
 		/** 
 		   * Read a record of hadoop, and then separate source id and target id from it.
-		   * @param line the record of hadoop. 
+		   * @param text the record of hadoop. 
 		   * @return a new IntPair. 
 		   * @exception IOException.
 		   * @see IntPair 

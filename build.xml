@@ -13,6 +13,7 @@
   <property name="bin"   location="classes"/>
   <property name="dist"  location="lib"/>
   <property name="test"  location="build"/>
+  <property name="doc"   location="doc"/>
 
   <path id="classpath">
     <fileset dir="${hadoop}/share/hadoop">
@@ -38,10 +39,20 @@
     <jar jarfile="${dist}/dist-graphvis.jar" basedir="${bin}" />
   </target>
 
+  <target name="doc" description="Generate Javadoc">
+    <delete dir="${doc}"/>
+    <mkdir  dir="${doc}"/>
+
+    <javadoc sourcepath="${src}" destdir="${doc}">
+      <classpath refid="classpath"/>
+    </javadoc>
+  </target>
+
   <target name="clean" description="Clean up">
     <delete dir="${bin}"/>
     <delete dir="${dist}"/>
     <delete dir="${test}"/>
+    <delete dir="${doc}"/>
   </target>
 
   <target name="test" depends="compile">
