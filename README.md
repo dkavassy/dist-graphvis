@@ -9,7 +9,7 @@ To compile
 
 2. To build a JAR file use
 
-    ant jar
+	ant jar
 
 The jar file is generated into lib/.
 
