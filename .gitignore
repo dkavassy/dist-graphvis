@@ -1,5 +1,4 @@
 .DS_Store
+classes/*
+lib/*
 build/*
-dist/*
-report/*
-

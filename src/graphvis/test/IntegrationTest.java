@@ -62,7 +62,7 @@ public class IntegrationTest
 		conf.setEdgeInputFormatClass(CSVEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
 		conf.setMasterComputeClass(GraphvisMasterCompute.class);
-
+		conf.setMaxNumberOfSupersteps(99);
 		
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
@@ -120,7 +120,7 @@ public class IntegrationTest
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GMLEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
-		conf.setMaxNumberOfSupersteps(10000);
+		conf.setMaxNumberOfSupersteps(99);
 		conf.setMasterComputeClass(GraphvisMasterCompute.class);
 		
 		// Run internally
@@ -182,7 +182,7 @@ public class IntegrationTest
 		conf.setComputationClass(FruchtermanReingoldGraphVis.class);
 		conf.setEdgeInputFormatClass(GraphMLEdgeInputFormat.class);
 		conf.setVertexOutputFormatClass(SVGVertexOutputFormat.class);
-		conf.setMaxNumberOfSupersteps(10000);
+		conf.setMaxNumberOfSupersteps(99);
 		conf.setMasterComputeClass(GraphvisMasterCompute.class);
 		// Run internally
 		Iterable<String> results = InternalVertexRunner.run(conf, null, graph);
