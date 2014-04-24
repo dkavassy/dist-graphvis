@@ -31,7 +31,7 @@ Run as a Giraph job, like this
 	-w 1 \
 	-yj giraph-1.1.0-SNAPSHOT-for-hadoop-2.2.0-jar-with-dependencies.jar,dist-graphvis.jar
 
-Note that the jar files are in the same directory as the shell script.
+Note that the jar files are in the same directory as the shell script. Giraph seems to need it.
 
 Testing
 -------
