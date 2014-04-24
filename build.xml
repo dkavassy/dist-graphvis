@@ -33,8 +33,9 @@
   <target name="jar" depends="compile" description="Generate JAR">
     <delete dir="${dist}"/>
     <mkdir dir="${dist}"/>
+    <copy file="${giraph.lib}/giraph-1.1.0-SNAPSHOT-for-hadoop-2.2.0-jar-with-dependencies.jar" todir="${dist}" />
 
-    <jar jarfile="${dist}/dist-graphvis.jar" basedir="${bin}"/>
+    <jar jarfile="${dist}/dist-graphvis.jar" basedir="${bin}" />
   </target>
 
   <target name="clean" description="Clean up">
