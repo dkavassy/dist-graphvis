@@ -42,9 +42,8 @@ import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 
 /** 
- * A class that represents coordinates of a vector. 
- * This class contain x and y coordinates. 
- * <p> 
+ * Fruchterman-Reingold algorithm
+ * 
  * @author Shan Huang 
  * @author Daniel Kavassy 
  * @version 1.1 Initial development. 
