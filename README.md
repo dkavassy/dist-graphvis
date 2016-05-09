@@ -1,7 +1,9 @@
 dist-graphvis
 =============
 
-Distributed graph visualisation on top of Hadoop/Giraph
+Distributed graph visualisation tool.
+
+It implements a distributed version of the Fruchterman-Reingold force-directed layout algorithm using Giraph. It was a small group research project for British Telecommunications plc done at the University of York.
 
 Usage
 -----
